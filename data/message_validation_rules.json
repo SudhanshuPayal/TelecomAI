@@ -1,0 +1,32 @@
+{
+  "validation_rules": {
+    "Origination": {
+      "required_fields": [
+        "caseId",
+        "iMSI",
+        "callingPartyNumber"
+      ],
+      "conditional_rules": [
+        {
+          "if_field": "callType",
+          "equals": "emergency",
+          "then_require": ["locationInformation"]
+        }
+      ]
+    },
+    "TerminationAnswer": {
+      "required_fields": [
+        "caseId",
+        "iMEI",
+        "calledPartyNumber"
+      ],
+      "optional_fields": ["timestamp"]
+    },
+    "Release": {
+      "required_fields": [
+        "caseId",
+        "releaseReason"
+      ]
+    }
+  }
+}

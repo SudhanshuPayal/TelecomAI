@@ -1,0 +1,531 @@
+V3-2015-ATIS-LAES-VoIP-Abstract-Syntax-Module 
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) cii(0) common (0) version-5(4)} 
+ 
+DEFINITIONS IMPLICIT TAGS ::= 
+ 
+BEGIN 
+ 
+IMPORTS 
+ 
+CCCIdentity, CaseIdentity, TimeStamp, AlertingSignal, AudibleSignal, TerminalDisplayInfo, 
+TransitCarrierIdentity, RedirectedFromInformation 
+FROM Laesp-j-std-025-b {iso(1) member-body(2) us(840) tia(113737) laes(2) tr45(0) j-std-025(0) j-std-025-b(2) version-1(0)}; 
+ 
+aTIS-LAES-VoIP-Abstract-Syntax-Module-OID OBJECT IDENTIFIER ::= {iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) cii(0) common (0) version-5(4)} 
+ -- OID for ATIS-LAES-VoIP-Abstract-Syntax-Module 
+ 
+LAESProtocol ::= SEQUENCE { 
+ aTIS-LAES-VoIP-Abstract-Syntax-Module-OID [0] OBJECT IDENTIFIER, 
+ laesMessage         [1] LaesMessage 
+} 
+ 
+LaesMessage ::= CHOICE { 
+ answer      [1] Answer, 
+ ccClose      [2] CCClose, 
+ ccOpen      [3] CCOpen, 
+ null-4      [4] NULL, 
+ origination    [5] Origination, 
+ null-6      [6] NULL,       -- reserved by J-STD-025-B [Ref 2] 
+ redirection    [7] Redirection, 
+ release      [8] Release, 
+ servingSystem    [9] ServingSystem, 
+ termAttempt    [10] TerminationAttempt, 
+--  connTest     [11] ConnectionTest,    see Annex F of J-STD-025-B [Ref 2] 
+ confPartyChange   [12] ConferencePartyChange, 
+ connection     [13] Connection, 
+ connectBreak    [14] ConnectionBreak, 
+ dialedDgtExtrn    [15] DialedDigitExtraction, 
+ networkSignal    [16] NetworkSignal, 
+ subjectSignal    [17] SubjectSignal, 
+ directSignalReporting  [18] DirectSignalReporting, 
+ mediaAndAddressReporting [19] MediaAndAddressReporting, 
+ ccChange     [20] CCChange, 
+ ccUnavailable    [21] CCUnavailable, 
+--  surveillanceStatus   [22] SurveillanceStatus,   see Annex D of this Standard 
+--  featureManagement   [23] FeatureManagement,   see Annex D of this Standard 
+ uuContent     [24] UUContent 
+} 
+ 
+-- Message Definitions 
+ 
+Answer ::= SEQUENCE { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ callId      [3] CallIdentity, 
+ answering     [4] PartyIdentity        OPTIONAL, 
+ location     [5] Location         OPTIONAL, 
+ answeringMedia    [6] SDP           OPTIONAL, 
+ signalingMsg    [7] SET OF EncapsulatedSignalingMessage  OPTIONAL 
+} 
+ 
+CCChange ::= SEQUENCE { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ callID      [3] CallIdentity, 
+ deliveryIdentifier   [4] DeliveryIdentifier, 
+ 
+        -- Include at least one of the two following parameters: 
+ subjectMedia    [5] SDP           OPTIONAL, 
+ associateMedia    [6] SDP           OPTIONAL, 
+ 
+ signalingMsg    [7] SET OF EncapsulatedSignalingMessage  OPTIONAL 
+} 
+ 
+CCClose ::= SEQUENCE { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ callID      [3] CallIdentity, 
+ deliveryIdentifier   [4] DeliveryIdentifier, 
+ signalingMsg    [5] SET OF EncapsulatedSignalingMessage  OPTIONAL 
+} 
+ 
+CCOpen ::= SEQUENCE { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ callID      [3] CallIdentity, 
+ deliveryIdentifier   [4] DeliveryIdentifier, 
+ 
+        -- Include at least one of the two following parameters: 
+ subjectMedia    [5] SDP           OPTIONAL, 
+ associateMedia    [6] SDP           OPTIONAL, 
+ 
+ signalingMsg    [7] SET OF EncapsulatedSignalingMessage  OPTIONAL 
+} 
+ 
+CCUnavailable ::= SEQUENCE { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ callId      [3] CallIdentity, 
+ unavailabilityReason  [4] VisibleString        OPTIONAL, 
+ signalingMsg    [5] SET OF EncapsulatedSignalingMessage  OPTIONAL 
+} 
+ 
+Connection ::= SEQUENCE { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ callId      [3] SEQUENCE OF CallIdentity, 
+ 
+        -- Include at least one of the following two parameters: 
+ connectedParties   [4] SEQUENCE OF PartyIdentity     OPTIONAL, 
+ newParties     [5] SEQUENCE OF PartyIdentity     OPTIONAL, 
+ 
+ connectedMedia    [6] SDP           OPTIONAL, 
+ signalingMsg    [7] SET OF EncapsulatedSignalingMessage  OPTIONAL 
+} 
+ 
+ConnectionBreak ::= SEQUENCE { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ callId      [3] SEQUENCE OF CallIdentity, 
+ 
+        -- Include at least one of the following three parameters: 
+ removedParties    [4] SEQUENCE OF PartyIdentity     OPTIONAL, 
+ remainingParties   [5] SEQUENCE OF PartyIdentity     OPTIONAL, 
+ droppedParties    [6] SEQUENCE OF PartyIdentity     OPTIONAL, 
+ 
+ signalingMsg    [7] SET OF EncapsulatedSignalingMessage  OPTIONAL 
+} 
+ 
+ConferencePartyChange ::= SEQUENCE { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ callId      [3] SEQUENCE OF CallIdentity, 
+        -- Include at least one of the following four parameters: 
+ communicatingParties  [4] SEQUENCE OF PartyIdentity     OPTIONAL, 
+ removedParties    [5] SEQUENCE OF PartyIdentity     OPTIONAL, 
+ joinedParties    [6] SEQUENCE OF PartyIdentity     OPTIONAL, 
+ droppedParties    [7] SEQUENCE OF PartyIdentity     OPTIONAL, 
+ 
+ signalingMsg    [8] SET OF EncapsulatedSignalingMessage  OPTIONAL 
+} 
+ 
+DialedDigitExtraction ::= SEQUENCE { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ callId      [3] CallIdentity, 
+ digits      [4] VisibleString (SIZE (1..32)) 
+} 
+ 
+DirectSignalReporting ::= SEQUENCE { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ callID      [3] CallIdentity        OPTIONAL, 
+ direction     [4] MessageDirection, 
+ location     [5] Location         OPTIONAL, 
+ signalingMsg    [6] EncapsulatedSignalingMessage 
+} 
+ 
+MediaAndAddressReporting ::= SEQUENCE  { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ callId      [3] CallIdentity, 
+ 
+        -- Include at least one of the following three parameters: 
+ subjectMedia    [4] SDP           OPTIONAL, 
+ associateMedia    [5] SDP           OPTIONAL, 
+ redirectedToPartyMedia  [6] SDP           OPTIONAL, 
+ 
+ subjectContactAddresses [7] PartyIdentity        OPTIONAL, 
+ associateContactAddresses [8] PartyIdentity        OPTIONAL, 
+ redirectedToPartyContactAddresses [9] PartyIdentity      OPTIONAL, 
+ mediaAndAddressReportingCause [10] VisibleString, 
+ signalingMsg    [11] SET OF EncapsulatedSignalingMessage  OPTIONAL 
+} 
+ 
+NetworkSignal ::= SEQUENCE { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ callId      [3] CallIdentity        OPTIONAL, 
+ signaledToPartyId   [4] PartyIdentity        OPTIONAL, 
+ associateContactAddresses [5] PartyIdentity        OPTIONAL, 
+ associateMedia    [6] SDP           OPTIONAL, 
+ 
+        -- Include at least one of the following four parameters: 
+ alertingSignal    [7] AlertingSignal        OPTIONAL, 
+ subjectAudibleSignal  [8] AudibleSignal        OPTIONAL, 
+ terminalDisplayInfo  [9] TerminalDisplayInfo      OPTIONAL, 
+ other      [10] UTF8String        OPTIONAL, 
+ 
+ signalingMsg    [11] SET OF EncapsulatedSignalingMessage  OPTIONAL 
+} 
+ 
+Origination ::= SEQUENCE { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ callId      [3] CallIdentity, 
+ calling      [4] PartyIdentity        OPTIONAL, 
+ called      [5] PartyIdentity        OPTIONAL, 
+ input      [6]CHOICE { 
+         userInput   [0] CHOICE { 
+           generic   [0] VisibleString, 
+           specific  [1] PartyIdentity}, 
+         translationInput [1] CHOICE { 
+           generic   [0] VisibleString, 
+           specific  [1] PartyIdentity} 
+         }, 
+ location     [7] Location         OPTIONAL, 
+ transitCarrierId   [8] TransitCarrierIdentity     OPTIONAL, 
+ subjectMedia    [9] SDP           OPTIONAL, 
+ originationCause   [10] VisibleString, 
+ signalingMsg    [11] SET OF EncapsulatedSignalingMessage  OPTIONAL, 
+ forkedCalls    [12] SET OF ForkedCallInformation    OPTIONAL 
+} 
+ 
+Redirection ::= SEQUENCE { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ callId      [3] CallIdentity, 
+ newCallId     [4] CallIdentity        OPTIONAL, 
+ redirectedFrom    [5] PartyIdentity        OPTIONAL, 
+ redirectedTo    [6] PartyIdentity        OPTIONAL, 
+ transitCarrierId   [7] TransitCarrierIdentity     OPTIONAL, 
+ associateMedia    [8] SDP           OPTIONAL, 
+ redirectedToSystemIdentity [9] SystemIdentity        OPTIONAL, 
+ signalingMsg    [10] SET OF EncapsulatedSignalingMessage  OPTIONAL 
+} 
+ 
+Release ::= SEQUENCE { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ callId      [3] CallIdentity, 
+ location     [4] Location         OPTIONAL, 
+ cause      [5] Cause          OPTIONAL, 
+ contactAddresses   [6] PartyIdentity        OPTIONAL, 
+ signalingMsg    [7] SET OF EncapsulatedSignalingMessage  OPTIONAL 
+} 
+ 
+ServingSystem ::= SEQUENCE { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ systemIdentity    [3] SystemIdentity        OPTIONAL, 
+ requestId     [4] CallIdentity        OPTIONAL, 
+ registrationType   [5] AddressRegistrationType     OPTIONAL, 
+ registering    [6] PartyIdentity        OPTIONAL, 
+ requesting     [7] PartyIdentity        OPTIONAL, 
+ registrar     [8] PartyIdentity        OPTIONAL, 
+ 
+ requestAddressInfo   [9] CHOICE { 
+    generic     [0] SEQUENCE OF SEQUENCE { 
+            address    [0] PartyIdentity, 
+            expirationPeriod [1] INTEGER}, -- in seconds 
+    sip      [1] SET OF SipHeader}     OPTIONAL, 
+  
+ responseAddressInfo  [10] CHOICE { 
+    generic     [0] SEQUENCE OF SEQUENCE { 
+            address    [0] PartyIdentity, 
+            expirationPeriod [1] INTEGER}, -- in seconds 
+    sip      [1] SET OF SipHeader}     OPTIONAL, 
+ 
+ failureReason    [11] Cause          OPTIONAL, 
+ 
+ expirationPeriod   [12] CHOICE { 
+    generic     [0] INTEGER,     -- for all addresses, in seconds, 
+    sip      [1] SipHeader}    OPTIONAL, -- maps SIP Expires header 
+ 
+ signalingMsg    [13] SET OF EncapsulatedSignalingMessage  OPTIONAL 
+} 
+ 
+SubjectSignal ::= SEQUENCE { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ callId      [3] CallIdentity        OPTIONAL, 
+ signalingPartyId   [4] PartyIdentity        OPTIONAL, 
+ signaledPartyId   [5] PartyIdentity        OPTIONAL, 
+ subjectMedia    [6] SDP           OPTIONAL, 
+ 
+ signal      [7] SEQUENCE { 
+   -- Include at least one of the following three parameters: 
+   dialedDigits    [0] VisibleString (SIZE (1..128))  OPTIONAL, 
+   featureKey     [1] VisibleString (SIZE (1..128))  OPTIONAL, 
+   otherSignalingInformation [2] VisibleString (SIZE (1..128))  OPTIONAL}, 
+ signalingMsg    [8] SET OF EncapsulatedSignalingMessage  OPTIONAL 
+} 
+ 
+TerminationAttempt ::= SEQUENCE { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ callId      [3] CallIdentity, 
+ calling      [4] PartyIdentity, 
+ called      [5] PartyIdentity        OPTIONAL, 
+ associateMedia    [6] SDP           OPTIONAL, 
+ redirectedFromInfo   [7] RedirectedFromInformation     OPTIONAL, 
+ signalingMsg    [8] SET OF EncapsulatedSignalingMessage  OPTIONAL 
+} 
+ 
+ 
+UUContent ::= SEQUENCE { 
+ caseId      [0] CaseIdentity, 
+ iAPSystemId    [1] IAPSystemIdentity       OPTIONAL, 
+ timestamp     [2] TimeStamp, 
+ callId      [3] CallIdentity        OPTIONAL, 
+ signalingMsg    [4] SET OF EncapsulatedSignalingMessage 
+} 
+ 
+ 
+-- Parameter Definitions 
+ 
+AddressRegistrationType ::= ENUMERATED { 
+ unknown        (0), 
+ registration      (1), 
+ deregistration      (2), 
+ registrationAndDeregistration  (3) 
+} 
+ 
+CallIdentity ::= SEQUENCE { 
+ main    [0] UTF8String, 
+ leg     [1] UTF8String          OPTIONAL 
+} 
+ 
+Cause ::= SEQUENCE { 
+ signalingType  [0] UTF8String, 
+ cause    [1] ParameterFormat        OPTIONAL 
+} 
+ 
+DeliveryIdentifier ::= CHOICE { 
+ cccId    [0] CCCIdentity, 
+ ccAddress   [1] NULL 
+} 
+ 
+ForkedCallInformation ::= SEQUENCE { 
+ forkedCallID  [0] CallIdentity, 
+ calledParty  [1] PartyIdentity 
+} 
+ 
+EncapsulatedSignalingMessage ::= OCTET STRING 
+ 
+IpAddress ::= CHOICE { 
+ ipV4    [1] OCTET STRING(SIZE(4)), 
+ ipV6    [2] OCTET STRING(SIZE(16)) 
+} 
+ 
+Location ::= SET OF SEQUENCE { 
+ locationType  [0] UTF8String, 
+ location   [1] UTF8String 
+} 
+ 
+MessageDirection ::= ENUMERATED { 
+ fromSubject  (0), 
+ toSubject   (1), 
+ unknown    (2), 
+ ... 
+} 
+ 
+ParameterFormat ::= CHOICE { 
+ generic    [0] UTF8String,     -- generic parameter representation 
+ sip     [1] SET OF SipHeader   -- SIP header representation 
+} 
+ 
+-- Include those PartyIdentity identification elements necessary to uniquely identify the party 
+-- known at the point in call or session and are authorized. 
+-- At least one of the PartyIdentity parameters is required. 
+ 
+PartyIdentity ::= SEQUENCE { 
+ esn     [0] VisibleString (SIZE (8))      OPTIONAL, 
+ imei    [1] VisibleString (SIZE (1..15))     OPTIONAL, 
+ tei     [2] VisibleString (SIZE (1..15))     OPTIONAL, 
+ spid    [3] VisibleString (SIZE (3..20))     OPTIONAL, 
+ imsi    [4] VisibleString (SIZE (1..15))     OPTIONAL, 
+ min     [5] VisibleString (SIZE (10))      OPTIONAL, 
+ dn     [6] VisibleString (SIZE (1..15))     OPTIONAL, 
+ userProvided  [7] VisibleString (SIZE (1..15))     OPTIONAL, 
+ appearanceId  [8] VisibleString (SIZE (1..15))     OPTIONAL, 
+ callingCardNum  [9] VisibleString (SIZE (1..20))     OPTIONAL, 
+ ipAddress   [10] IpAddress          OPTIONAL, 
+ x121    [11] VisibleString (SIZE (1..15))     OPTIONAL, 
+ trunkId    [12] VisibleString (SIZE (1..32))     OPTIONAL, 
+ subaddress   [13] OCTET STRING (SIZE (2..21))     OPTIONAL, 
+ genericAddress  [14] SEQUENCE OF VisibleString (SIZE (1..32)) OPTIONAL, 
+ genericDigits  [15] SEQUENCE OF VisibleString (SIZE (1..32)) OPTIONAL, 
+ genericName  [16] SEQUENCE OF UTF8String      OPTIONAL, 
+ port    [17] VisibleString (SIZE (1..32))     OPTIONAL, 
+ context    [18] VisibleString (SIZE (1..64))     OPTIONAL, 
+ isdnHighLayer  [19] OCTET STRING (SIZE (2..14))     OPTIONAL, 
+ isdnLowLayer  [20] OCTET STRING (SIZE (2..14))     OPTIONAL, 
+ uri     [21] SET OF UTF8String        OPTIONAL, 
+ sipHeader   [22] SET OF SipHeader        OPTIONAL, 
+ nai     [27] UTF8String         OPTIONAL, 
+ mac802    [28] VisibleString         OPTIONAL, 
+ fqdn    [29] UTF8String         OPTIONAL 
+} 
+ 
+PortNumber ::= INTEGER 
+ 
+SDP ::= UTF8String 
+ 
+SipHeader ::= UTF8String 
+ 
+ 
+--  The following are optional messages: 
+ 
+SurveillanceStatus ::= SEQUENCE { 
+ caseId    [0] CaseIdentity, 
+ reportingSystemId [1] IAPSystemIdentity        OPTIONAL, 
+        -- include to identify the system reporting the surveillance status, 
+        -- when the underlying data carriage does not imply that system. 
+ timestamp   [2] TimeStamp, 
+ statusEventType [3] SurveillanceStatusEventType, 
+ currentStatus  [4] CurrentSurveillanceStatus 
+} 
+ 
+CurrentSurveillanceStatus ::= ENUMERATED { 
+ fullyActive  (0), 
+ partiallyActive (1), 
+ inactive   (2) 
+} 
+ 
+SurveillanceStatusEventType ::= ENUMERATED { 
+ activation   (0), 
+ deactivation  (1), 
+ change    (2), 
+ scheduledReport (3) 
+} 
+ 
+FeatureManagement ::= SEQUENCE { 
+ caseId    [0] CaseIdentity, 
+ iAPSystemId  [1] IAPSystemIdentity        OPTIONAL, 
+       -- include to identify the system containing the Intercept Access Function, 
+       -- when the underlying data carriage does not imply that system. 
+ timestamp   [2] TimeStamp, 
+ subscriberId  [3] PartyIdentity         OPTIONAL, 
+       -- Include to identify the subscriber to the service, when the identifier is 
+       -- more specific than the intercept subject identity associated with the 
+       -- CaseIdentity. 
+ featureId   [4] UTF8String, 
+ managementType  [5] FeatureManagementType, 
+ activationInfo  [6] UTF8String          OPTIONAL, 
+       -- include to identity information provided for use by a feature 
+       -- (e.g., forward-to number for call forwarding), when feature activation 
+       -- was attempted and information was provided for use by the feature. 
+ failureReason  [7] UTF8String          OPTIONAL 
+       -- include to indicate the reason for an unsuccessful feature activation or 
+       -- deactivation, when the feature activation or deactivation was unsuccessful. 
+} 
+ 
+FeatureManagementType ::= ENUMERATED { 
+ activation  (0), 
+ deactivation (1) 
+} 
+ 
+IAPSystemIdentity ::= CHOICE { 
+ string     [1] VisibleString (SIZE (1..15)), 
+      -- Used for backwards compatibility with J-STD-025-B. 
+ iAPSystemIdentityType [2] IAPSystemIdentityType 
+      -- Used for reporting IP address formats and reporting multiple identity types. 
+} 
+ 
+IAPSystemIdentityType ::= SEQUENCE { 
+ ipV4    [1] OCTET STRING (SIZE(4))      OPTIONAL, 
+ ipV6    [2] OCTET STRING (SIZE(16))      OPTIONAL, 
+ fqdn    [3] OCTET STRING         OPTIONAL, 
+       -- Fully Qualified Domain Name and the trailing “.” may not be included. 
+ other    [4] OCTET STRING         OPTIONAL 
+} 
+ 
+SystemIdentity ::= IAPSystemIdentity 
+ 
+END -- of ATIS-LAES-VoIP-Abstract-Syntax-Module 
+ 
+ 
+ 
+V3-2015-CCDeliveryHeaderModule 
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) ccdeliveryheader(1) version-5(4)} 
+ 
+DEFINITIONS IMPLICIT TAGS ::= 
+ 
+BEGIN 
+ 
+IMPORTS 
+ 
+TimeStamp, CaseIdentity 
+FROM Laesp-j-std-025-b {iso(1) member-body(2) us(840) tia(113737) laes(2) tr45(0) j-std-025(0) j-std-025-b(2) version-1(0)} 
+ 
+CallIdentity, IAPSystemIdentity 
+FROM V3-2015-ATIS-LAES-VoIP-Abstract-Syntax-Module {iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) cii(0) common (0) version-5(4)}; 
+ 
+cCDeliveryHeaderModuleOID OBJECT IDENTIFIER ::= {iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) ccdeliveryheader(1) version-5(4)} 
+    -- OID for CCDeliveryHeaderModule 
+ 
+CCProtocol ::= SEQUENCE { 
+ cCDeliveryHeaderModuleOID [0] OBJECT IDENTIFIER, 
+ ccapdu      [1] CC-APDU 
+} 
+ 
+CC-APDU ::= SEQUENCE { 
+ ccDeliveryHeader [0] CCDeliveryHeader, 
+ payload    [1] OCTET STRING 
+} 
+ 
+CCDeliveryHeader ::= SEQUENCE { 
+ correlationInfo [0] SEQUENCE { 
+   caseId    [0] CaseIdentity        OPTIONAL, 
+   iapId    [1] IAPSystemIdentity       OPTIONAL, 
+   callID    [2] CallIdentity}, 
+ timeStamp   [1] TimeStamp, 
+ packetDirection [2] PacketDirection         OPTIONAL, 
+ sequenceNumber  [3] INTEGER           OPTIONAL 
+} 
+ 
+PacketDirection ::= ENUMERATED { 
+ fromSubject (0), 
+ toSubject  (1) 
+} 
+ 
+END  -- of CCDeliveryHeaderModule 

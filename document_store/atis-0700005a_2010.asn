@@ -1,0 +1,203 @@
+-- IMS 3GPP VoIP CII Delivery Module
+A-2010-IMS-3GPP-VoIP-CII-Module
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) wtsc (2) ims-voip(0) cii-voip(0) version-2(1)}
+
+DEFINITIONS IMPLICIT TAGS ::=
+
+BEGIN
+	IMPORTS
+		-- Imports from ATIS-1000678.b.2010 Module
+		Answer,
+		CCClose,
+		CCOpen,
+		Change,
+		Origination,
+		Redirection,
+		Release,
+		ServingSystem,
+		TerminationAttempt,
+		ConferencePartyChange,
+		Connection,
+		ConnectionBreak,
+		DialedDigitExtraction,
+		NetworkSignal,
+		SubjectSignal,
+		DirectSignalReporting,
+		MediaAndAddressReporting,
+		CCChange,
+		CCUnavailable,
+		UUContent,
+		-- SDN extra imports added from the same spec(ATIS-1000678.b.2010) required for the copied objects
+		CaseIdentity,
+		IAPSystemIdentity,
+		TimeStamp,
+		CallIdentity,
+		PartyIdentity,
+		MediaInformation,
+		ProtocolSpecificParameters,
+		EncapsulatedSignalingMessage,
+		TransitCarrierIdentity,
+		ForkedCallInformation,
+		RedirectedFromInformation,
+		Cause,
+		FROM B-2010-ATIS-LAES-VoP-Abstract-Syntax-Module  -- T1S1-LAES-VoP-Abstract-Syntax-Module
+			{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) cii(0) common (0) version-4(3)}
+		
+		-- Imports from IMS-3GPP-VoIP-CC- Module
+		ims-3GPP-VoIP-CC-DeliveryHeaderModule-OID
+		FROM A-2010-IMS-3GPP-VoIP-CC-Module
+			{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) wtsc(2) ims-voip(0) cc-voip(1) version-2(1)};
+		
+	
+	-- Notations for IMS-3GPP-VoIP-CII-Module
+	cc-DeliveryHeaderModule-OID OBJECT IDENTIFIER ::= {ims-3GPP-VoIP-CC-DeliveryHeaderModule-OID}
+	ims-3GPP-VoIP-CII-Module-OID OBJECT IDENTIFIER ::= {iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) wtsc(2) ims-voip(0) cii-voip(0)version-2(1)}
+	protocolIdentifier OBJECT IDENTIFIER ::= {ims-3GPP-VoIP-CII-Module-OID}
+	
+	LAESProtocol ::= CHOICE {
+		enhancedProtocol IMS-3gpp-VoIP-CII-Protocol,
+		laesMessage IMS-3gpp-VoIP-CII-Message
+		}
+		
+	IMS-3gpp-VoIP-CII-Protocol ::= SEQUENCE {
+		protocolIdentifier OBJECT IDENTIFIER,
+		ims-3gpp-VoIP-CII-Message IMS-3gpp-VoIP-CII-Message 
+		}
+		
+	IMS-3gpp-VoIP-CII-Message ::= CHOICE {
+		ims-3gpp-VoIP-answer [1] Answer,
+		ims-3gpp-VoIP-ccClose [2] CCClose,
+		ims-3gpp-VoIP-ccOpen [3] CCOpen,
+		ims-3gpp-VoIP-change [4] Change,
+		ims-3gpp-VoIP-origination [5] Origination,
+		null-6 [6] NULL,
+		-- [6] reserved by [025B] for Packet Envelope
+		ims-3gpp-VoIP-redirection [7] Redirection,
+		ims-3gpp-VoIP-release [8] Release,
+		ims-3gpp-VoIP-servingSystem [9] ServingSystem,
+		ims-3gpp-VoIP-termAttempt [10] TerminationAttempt,
+		null-11 [11] NULL,
+		-- [11] reserved by [025B] for Connection Test
+		ims-3gpp-VoIP-conferencePartyChange [12] ConferencePartyChange,
+		ims-3gpp-VoIP-connection [13] Connection,
+		ims-3gpp-VoIP-connectionBreak [14] ConnectionBreak,
+		ims-3gpp-VoIP-dialedDigitExtraction [15] DialedDigitExtraction,
+		ims-3gpp-VoIP-networkSignal [16] NetworkSignal,
+		ims-3gpp-VoIP-subjectSignal [17] SubjectSignal,
+		ims-3gpp-VoIP-directSignalReporting [18] DirectSignalReporting,
+		ims-3gpp-VoIP-mediaAndAddressReporting [19] MediaAndAddressReporting,
+		ims-3gpp-VoIP-ccChange [20] CCChange,
+		ims-3gpp-VoIP-ccUnavailable [21] CCUnavailable,
+		null-22 [22] NULL,
+		-- [22] reserved by [678] for Surveillance Status
+		null-23 [23] NULL,
+		-- [23] reserved by [678] for Feature Management
+		ims-3gpp-VOIP-uuContent [24] UUContent
+		}
+		
+	Location ::= SET OF LocationInfo
+	
+	LocationInfo ::= SEQUENCE {	
+		locationType [0] UTF8String,
+		locationData [1] UTF8String
+		}
+
+	-- SDN : Copied the next structures from the T1.678 2010 spec 
+	-- this to make sure the Location will be used as define here locally
+	-- In order to support this, we need to import some new  structures:
+	
+	Answer ::= SEQUENCE { 
+	caseId    [0] CaseIdentity, 
+	iAPSystemId   [1] IAPSystemIdentity    OPTIONAL, 
+	timestamp    [2] TimeStamp, 
+	callId    [3] CallIdentity, 
+	answering    [4] PartyIdentity    OPTIONAL, 
+	location     [5] Location     OPTIONAL, 
+	answeringMedia   [6] MediaInformation     OPTIONAL, 
+	protocolSpecificParameters   [7] ProtocolSpecificParameters  OPTIONAL, 
+	signalingMsg   [8] SET OF EncapsulatedSignalingMessage     OPTIONAL  
+	} 
+	
+	Origination ::= SEQUENCE { 
+	caseId    [0] CaseIdentity, 
+	iAPSystemId   [1] IAPSystemIdentity     OPTIONAL, 
+	timestamp    [2] TimeStamp, 
+	callId    [3] CallIdentity, 
+	calling     [4] PartyIdentity     OPTIONAL, 
+	called     [5] PartyIdentity    OPTIONAL, 
+	input  CHOICE { 
+		userInput   [6] CHOICE { 
+		generic VisibleString,  
+		specific PartyIdentity 
+		}, 
+	
+		translationInput  [7] CHOICE { 
+		generic VisibleString, 
+		specific PartyIdentity
+		}
+	}, 
+	location     [8] Location     OPTIONAL, 
+	transitCarrierId   [9] TransitCarrierIdentity    OPTIONAL, 
+	subjectMedia   [10] MediaInformation    OPTIONAL, 
+	originationCause   [11] VisibleString, 
+	protocolSpecificParameters   [12] ProtocolSpecificParameters     OPTIONAL, 
+	signalingMsg   [13] SET OF EncapsulatedSignalingMessage  OPTIONAL, 
+	forkedCalls   [14] SET OF ForkedCallInformation                    
+	OPTIONAL 
+	} 
+	
+	Release ::= SEQUENCE  { 
+	caseId    [0] CaseIdentity, 
+	iAPSystemId   [1] IAPSystemIdentity     OPTIONAL, 
+	timestamp    [2] TimeStamp, 
+	callId    [3] CallIdentity, 
+	location     [4] Location      OPTIONAL, 
+	cause    [5] Cause      OPTIONAL, 
+	contactAddresses       [6] PartyIdentity     OPTIONAL, 
+	protocolSpecificParameters   [7] ProtocolSpecificParameters  OPTIONAL, 
+	signalingMsg   [8] SET OF EncapsulatedSignalingMessage    OPTIONAL 
+	} 
+	
+	TerminationAttempt ::= SEQUENCE { 
+	
+	caseId    [0] CaseIdentity, 
+	iAPSystemId   [1] IAPSystemIdentity    OPTIONAL, 
+	timestamp    [2] TimeStamp, 
+	callId    [3] CallIdentity, 
+	calling     [4] PartyIdentity, 
+	called     [5] PartyIdentity    OPTIONAL, 
+	location     [6] Location     OPTIONAL, 
+	associateMedia   [7] MediaInformation     OPTIONAL, 
+	redirectedFromInfo   [8] RedirectedFromInformation  OPTIONAL, 
+	protocolSpecificParameters   [9] ProtocolSpecificParameters   OPTIONAL, 
+	signalingMsg   [10] SET OF EncapsulatedSignalingMessage OPTIONAL 
+	} 
+END -- of A-2010-IMS-3GPP-VoIP-CII-Module
+
+
+-- IMS 3GPP VoIP Communication Content Delivery Module
+A-2010-IMS-3GPP-VoIP-CC-Module
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) wtsc(2) ims-voip(0) cc-voip(1) version-2(1)}
+
+DEFINITIONS IMPLICIT TAGS ::=
+
+BEGIN
+	IMPORTS
+		-- Imports from ATIS-1000678.b.2010 Module
+		-- SDN import the header and define the structure here
+		CCDeliveryHeader
+		--CC-APDU  
+		FROM B-2010-CCDeliveryHeaderModule
+			{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) ccdeliveryheader(1) version-4(3)};
+	
+	-- Notations for IMS-3GPP-VoIP-CC-Module
+	ims-3GPP-VoIP-CC-DeliveryHeaderModule-OID OBJECT IDENTIFIER ::= {iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) wtsc(2) ims-voip(0) cc-voip(1) version-2(1)}
+
+	IMS-3GPP-VoIP-CC-APDU ::= CC-APDU
+
+	-- SDN copied from the parent spec(T.1678) to overcome a improt issue with the ToLua functionality
+	CC-APDU ::= SEQUENCE { 
+		ccDeliveryHeader [0] CCDeliveryHeader, 
+		payload    [1] OCTET STRING 
+	} 
+END -- of IMS-3GPP-VoIP-CC-Module

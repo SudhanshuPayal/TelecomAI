@@ -1,0 +1,65 @@
+CCDeliveryHeaderModule-v3
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) ccdeliveryheader(1) version-5(4)}
+
+DEFINITIONS IMPLICIT TAGS ::=
+
+BEGIN
+
+IMPORTS
+
+
+--
+-- The following Parameters from J-STD-025-B have been added at the end of T1_678_v3_CII.asn.
+--
+-- TimeStamp, CaseIdentity
+-- FROM Laesp-j-std-025-b
+-- {iso(1) member-body(2) us(840) tia(113737) laes(2) tr45(0) j-std-025(0) j-std-025-b(2) version-1(0)}
+
+CallIdentity, IAPSystemIdentity, TimeStamp, CaseIdentity
+FROM ATIS-LAES-VoIP-Abstract-Syntax-Module-v3
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) cii(0) common (0) version-5(4)};
+
+cCDeliveryHeaderModuleOID OBJECT IDENTIFIER ::= {iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) ccdeliveryheader(1) version-5(4)}
+-- OID for CCDeliveryHeaderModule
+
+
+-- [T1.678 v3 field CCProtocol is the TPDU
+CCProtocol ::= SEQUENCE
+{
+	cCDeliveryHeaderModuleOID	[0] OBJECT IDENTIFIER,
+	ccapdu				[1] CC-APDU
+}
+
+CC-APDU ::= SEQUENCE
+{
+	-- [T1.678 v3 change] field ccDeliveryHeader has become a mandatory field
+	ccDeliveryHeader	[0] CCDeliveryHeader,
+	payload			[1] OCTET STRING
+}
+
+CCDeliveryHeader ::= SEQUENCE
+{
+	correlationInfo		[0] SEQUENCE
+	{
+		caseId			[0] CaseIdentity	OPTIONAL,
+		iapId			[1] IAPSystemIdentity	OPTIONAL,
+		
+		-- [T1.678 v3 change] field contentIdentifier [2] was removed from ATIS-1000678.b.2010
+		-- [T1.678 v3 change] field callID [2] was added
+		callID			[2] CallIdentity
+	},
+
+	-- [T1.678 v3 change] field timeStamp has become a mandatory field
+	timeStamp		[1] TimeStamp,
+
+	packetDirection		[2] PacketDirection		OPTIONAL,
+	sequenceNumber		[3] INTEGER			OPTIONAL
+}
+
+PacketDirection ::= ENUMERATED
+{
+	fromSubject		(0),
+	toSubject		(1)
+}
+
+END  -- of CCDeliveryHeaderModule-v3

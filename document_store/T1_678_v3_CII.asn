@@ -1,0 +1,852 @@
+ATIS-LAES-VoIP-Abstract-Syntax-Module-v3
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) cii(0) common (0) version-5(4)}
+
+-- 2018-10-10 "[T1.678 v3 change]" marks the differences from T1.678 v2b
+
+
+DEFINITIONS IMPLICIT TAGS ::=
+
+BEGIN
+
+IMPORTS
+
+--
+-- The following Parameters from J-STD-025-B have been added at the end of the syntax to minimize the number of ASN.1 syntax files.
+--
+-- CCCIdentity, CaseIdentity, Timestamp, AlertingSignal, AudibleSignal, TerminalDisplayInfo,
+-- TransitCarrierIdentity, RedirectedFromInformation
+-- FROM Laesp-j-std-025-b
+-- {iso(1) member-body(2) us(840) tia(113737) laes(2) tr45(0) j-std-025(0) j-std-025-b(2) version-1(0)}
+
+;
+
+aTIS-LAES-VoIP-Abstract-Syntax-Module-OID OBJECT IDENTIFIER ::= {iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) cii(0) common (0) version-5(4)}
+-- OID for ATIS-LAES-VoIP-Abstract-Syntax-Module
+
+LAESProtocol ::= SEQUENCE
+{
+	aTIS-LAES-VoIP-Abstract-Syntax-Module-OID	[0] OBJECT IDENTIFIER,
+	laesMessage					[1] LaesMessage
+}
+
+LaesMessage ::= CHOICE
+{
+	answer				[1] Answer,
+	ccClose				[2] CCClose,
+	ccOpen				[3] CCOpen,
+
+	-- [T1.678 v3 change] field change [4] was removed from ATIS-1000678.b.2010
+	null-4				[4] NULL,
+
+	origination			[5] Origination,
+	null-6				[6] NULL,				-- reserved by J-STD-025-B [Ref 2]
+	redirection			[7] Redirection,
+	release				[8] Release,
+	servingSystem			[9] ServingSystem,
+	termAttempt			[10] TerminationAttempt,
+	--  connTest			[11] ConnectionTest,			see Annex F of J-STD-025-B [Ref 2]
+	confPartyChange			[12] ConferencePartyChange,
+	connection			[13] Connection,
+	connectBreak			[14] ConnectionBreak,
+	dialedDgtExtrn			[15] DialedDigitExtraction,
+	networkSignal			[16] NetworkSignal,
+	subjectSignal			[17] SubjectSignal,
+	directSignalReporting		[18] DirectSignalReporting,
+	mediaAndAddressReporting	[19] MediaAndAddressReporting,
+	ccChange			[20] CCChange,
+	ccUnavailable			[21] CCUnavailable,
+	--  surveillanceStatus		[22] SurveillanceStatus,		see Annex D of this Standard
+	--  featureManagement		[23] FeatureManagement,			see Annex D of this Standard
+	uuContent			[24] UUContent
+}
+
+-- Message Definitions
+
+Answer ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+	callId				[3] CallIdentity,
+	answering			[4] PartyIdentity				OPTIONAL,
+	location			[5] Location					OPTIONAL,
+
+	-- [T1.678 v3 change] field answeringMedia was changed from MediaInformation (sequence) to SDP (UTF8String)
+	answeringMedia			[6] SDP						OPTIONAL,
+
+	-- [T1.678 v3 change] field protocolSpecificParameters [7] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field signalingMsg [8] was changed to [7]
+	signalingMsg			[7] SET OF EncapsulatedSignalingMessage		OPTIONAL
+}
+
+CCChange ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+
+	-- [T1.678 v3 change] field contentIdentifier [3] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field callID [3] was added
+	callID				[3] CallIdentity,
+	deliveryIdentifier		[4] DeliveryIdentifier,
+
+	-- Include at least one of the two following parameters:
+
+	-- [T1.678 v3 change] field subjectMedia [5] was changed from MediaInformation (sequence) to SDP (UTF8String)
+	subjectMedia			[5] SDP						OPTIONAL,
+
+	-- [T1.678 v3 change] field associateMedia [6] was changed from MediaInformation (sequence) to SDP (UTF8String)
+	associateMedia			[6] SDP						OPTIONAL,
+
+	-- [T1.678 v3 change] field protocolSpecificParameters [7] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field signalingMsg [8] was changed to [7]
+	signalingMsg			[7] SET OF EncapsulatedSignalingMessage		OPTIONAL
+}
+
+CCClose ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+
+	-- [T1.678 v3 change] field contentIdentifier [3] was removed from ATIS-1000678.b.2010
+	-- [T1.678 v3 change] field callID [3] was added
+	callID				[3] CallIdentity,
+	deliveryIdentifier		[4] DeliveryIdentifier,
+	
+	-- [T1.678 v3 change] field protocolSpecificParameters [5] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field signalingMsg [6] was changed to [5]
+	signalingMsg			[5] SET OF EncapsulatedSignalingMessage		OPTIONAL
+}
+
+CCOpen ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+
+	-- [T1.678 v3 change] field contentIdentifier [3] was removed from ATIS-1000678.b.2010
+	-- [T1.678 v3 change] field callID [3] was added
+	callID				[3] CallIdentity,
+	deliveryIdentifier		[4] DeliveryIdentifier,
+
+	-- [T1.678 v3 change] field ccDeliveryFormat [5] was removed from ATIS-1000678.b.2010
+
+	-- Include at least one of the two following parameters:
+
+	-- [T1.678 v3 change] field subjectMedia was changed from [6] MediaInformation (sequence) to [5] SDP (UTF8String)
+	subjectMedia			[5] SDP						OPTIONAL,
+
+	-- [T1.678 v3 change] field associateMedia was changed from [7] MediaInformation (sequence) to [6] SDP (UTF8String)
+	associateMedia			[6] SDP						OPTIONAL,
+
+	-- [T1.678 v3 change] field protocolSpecificParameters [8] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field signalingMsg [9] was changed to [7]
+	signalingMsg			[7] SET OF EncapsulatedSignalingMessage		OPTIONAL
+}
+
+CCUnavailable ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+	callId				[3] CallIdentity,
+	unavailabilityReason		[4] VisibleString				OPTIONAL,
+	
+	-- [T1.678 v3 change] field protocolSpecificParameters [5] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field signalingMsg [6] was changed to [5]
+	signalingMsg			[5] SET OF EncapsulatedSignalingMessage		OPTIONAL
+}
+
+
+-- [T1.678 v3 change] field change [4] and structure Change were removed from ATIS-1000678.b.2010
+
+
+Connection ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+	callId				[3] SEQUENCE OF CallIdentity,
+
+	-- Include at least one of the following two parameters:
+	connectedParties		[4] SEQUENCE OF PartyIdentity			OPTIONAL,
+	newParties			[5] SEQUENCE OF PartyIdentity			OPTIONAL,
+
+	-- [T1.678 v3 change] field connectedMedia was changed from MediaInformation (sequence) to SDP (UTF8String)
+	connectedMedia			[6] SDP						OPTIONAL,
+
+	-- [T1.678 v3 change] field protocolSpecificParameters [7] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field signalingMsg [8] was changed to [7]
+	signalingMsg			[7] SET OF EncapsulatedSignalingMessage		OPTIONAL
+}
+
+ConnectionBreak ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+	callId				[3] SEQUENCE OF CallIdentity,
+
+	-- Include at least one of the following three parameters:
+	removedParties			[4] SEQUENCE OF PartyIdentity			OPTIONAL,
+	remainingParties		[5] SEQUENCE OF PartyIdentity			OPTIONAL,
+	droppedParties			[6] SEQUENCE OF PartyIdentity			OPTIONAL,
+
+	-- [T1.678 v3 change] field suspendedMedia [7] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field protocolSpecificParameters [8] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field signalingMsg [9] was changed to [7]
+	signalingMsg			[7] SET OF EncapsulatedSignalingMessage		OPTIONAL
+}
+
+ConferencePartyChange ::= SEQUENCE
+{						
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+	callId				[3] SEQUENCE OF CallIdentity,
+
+	-- Include at least one of the following four parameters:
+	communicatingParties		[4] SEQUENCE OF PartyIdentity			OPTIONAL,
+	removedParties			[5] SEQUENCE OF PartyIdentity			OPTIONAL,
+	joinedParties			[6] SEQUENCE OF PartyIdentity			OPTIONAL,
+
+	-- [T1.678 v3 change] field protocolSpecificParameters [7] was removed from ATIS-1000678.b.2010	
+	-- [T1.678 v3 change] field droppedParties [7] was added
+	droppedParties			[7] SEQUENCE OF PartyIdentity			OPTIONAL,
+
+	signalingMsg			[8] SET OF EncapsulatedSignalingMessage		OPTIONAL
+}
+
+DialedDigitExtraction ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+	callId				[3] CallIdentity,
+	digits				[4] VisibleString (SIZE (1..32))
+
+	-- [T1.678 v3 change] field protocolSpecificParameters [5] was removed from ATIS-1000678.b.2010
+}
+
+DirectSignalReporting ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+	
+	-- [T1.678 v3 change] field correlationID [3] was removed from ATIS-1000678.b.2010
+	-- [T1.678 v3 change] field callID [3] was added
+	callID				[3] CallIdentity				OPTIONAL,
+	
+	-- [T1.678 v3 change] field protocolSpecificParameters [4] was removed from ATIS-1000678.b.2010
+	-- [T1.678 v3 change] field direction [4] was added
+	direction			[4] MessageDirection,
+	
+	-- [T1.678 v3 change] field location [5] was added
+	location			[5] Location					OPTIONAL,
+	
+	-- *****************************************************************************
+	-- [T1.678 v3 change] field signalingMsg [5] SET OF EncapsulatedSignalingMessage 
+	-- was changed to [6] EncapsulatedSignalingMessage and has become MANDATORY !!!
+	-- *****************************************************************************
+	signalingMsg			[6] EncapsulatedSignalingMessage	
+}
+
+MediaAndAddressReporting ::= SEQUENCE
+{
+	caseId					[0] CaseIdentity,
+	iAPSystemId				[1] IAPSystemIdentity				OPTIONAL,
+	timestamp				[2] TimeStamp,
+	callId					[3] CallIdentity,
+
+	-- Include at least one of the following three parameters:
+
+	-- [T1.678 v3 change] field subjectMedia was changed from MediaInformation (sequence) to SDP (UTF8String)
+	subjectMedia				[4] SDP						OPTIONAL,
+
+	-- [T1.678 v3 change] field associateMedia was changed from SET OF MediaInformation (sequence) to SDP (UTF8String)
+	associateMedia				[5] SDP						OPTIONAL,
+
+	-- [T1.678 v3 change] field redirectedToPartyMedia was changed from MediaInformation (sequence) to SDP (UTF8String)
+	redirectedToPartyMedia			[6] SDP						OPTIONAL,
+
+	subjectContactAddresses			[7] PartyIdentity				OPTIONAL,
+	associateContactAddresses		[8] PartyIdentity				OPTIONAL,
+	redirectedToPartyContactAddresses	[9] PartyIdentity				OPTIONAL,
+	mediaAndAddressReportingCause		[10] VisibleString,
+
+	-- [T1.678 v3 change] field protocolSpecificParameters [11] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field signalingMsg [12] was changed to [11]
+	signalingMsg				[11] SET OF EncapsulatedSignalingMessage	OPTIONAL
+}
+
+NetworkSignal ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+	callId				[3] CallIdentity				OPTIONAL,
+	signaledToPartyId		[4] PartyIdentity				OPTIONAL,
+	
+	-- [T1.678 v3 change] field subjectContactAddresses [5] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field associateContactAddresses [6} was changed to [5]
+	associateContactAddresses	[5] PartyIdentity				OPTIONAL,
+
+	-- [T1.678 v3 change] field associateMedia was changed from [7] MediaInformation (sequence) to [6] SDP (UTF8String)
+	associateMedia			[6] SDP						OPTIONAL,
+
+	-- Include at least one of the following four parameters:
+
+	-- [T1.678 v3 change] field alertingSignal [8] was changed to [7]
+	alertingSignal			[7] AlertingSignal				OPTIONAL,
+
+	-- [T1.678 v3 change] field subjectAudibleSignal [9] was changed to [8]
+	subjectAudibleSignal		[8] AudibleSignal				OPTIONAL,
+	
+	-- [T1.678 v3 change] field terminalDisplayInfo [10] was changed to [9]
+	terminalDisplayInfo		[9] TerminalDisplayInfo				OPTIONAL,
+
+	-- [T1.678 v3 change] field other [11] was changed to [10]
+	other				[10] UTF8String					OPTIONAL,
+
+	-- [T1.678 v3 change] field refer [12] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field protocolSpecificParameters [13] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field signalingMsg [14] was changed to [11]
+	signalingMsg			[11] SET OF EncapsulatedSignalingMessage	OPTIONAL
+}
+
+Origination ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+	callId				[3] CallIdentity,
+	calling				[4] PartyIdentity				OPTIONAL,
+	called				[5] PartyIdentity				OPTIONAL,
+
+	-- [T1.678 v3 change] field input has been assigned a tag [6]
+	input				[6] CHOICE
+	{
+		-- [T1.678 v3 change] field userInput [6] was changed to [0]
+		userInput			[0] CHOICE
+		{
+			-- [T1.678 v3 change] field generic has been assigned a tag [0]
+			generic				[0] VisibleString,
+			-- [T1.678 v3 change] field specific has been assigned a tag [1]
+			specific			[1] PartyIdentity
+		},
+		-- [T1.678 v3 change] field translationInput [7] was changed to [1]
+		translationInput		[1] CHOICE
+		{
+			-- [T1.678 v3 change] field generic has been assigned a tag [0]
+			generic				[0] VisibleString,
+			-- [T1.678 v3 change] field specific has been assigned a tag [1]
+			specific			[1] PartyIdentity
+		}
+	},
+
+	-- [T1.678 v3 change] field location [8] was changed to [7]
+	location			[7] Location					OPTIONAL,
+	
+	-- [T1.678 v3 change] field transitCarrierId [9] was changed to [8]
+	transitCarrierId		[8] TransitCarrierIdentity			OPTIONAL,
+	
+	-- [T1.678 v3 change] field subjectMedia was changed from [10] MediaInformation (sequence) to [9] SDP (UTF8String)
+	subjectMedia			[9] SDP						OPTIONAL,
+	
+	-- [T1.678 v3 change] field originationCause [11] was changed to [10]
+	originationCause		[10] VisibleString,
+
+	-- [T1.678 v3 change] field protocolSpecificParameters [12] was removed from ATIS-1000678.b.2010
+	
+	-- [T1.678 v3 change] field  [13] was changed to [11]
+	signalingMsg			[11] SET OF EncapsulatedSignalingMessage	OPTIONAL,
+	
+	-- [T1.678 v3 change] field  [14] was changed to [12]
+	forkedCalls			[12] SET OF ForkedCallInformation		OPTIONAL
+}
+
+Redirection ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+	callId				[3] CallIdentity,
+	newCallId			[4] CallIdentity				OPTIONAL,
+	redirectedFrom			[5] PartyIdentity				OPTIONAL,
+	redirectedTo			[6] PartyIdentity				OPTIONAL,
+	transitCarrierId		[7] TransitCarrierIdentity			OPTIONAL,
+
+	-- [T1.678 v3 change] field subjectMedia [8] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field associateMedia was changed from [9] MediaInformation (sequence) to [8] SDP (UTF8String)
+	associateMedia			[8] SDP						OPTIONAL,
+
+	-- [T1.678 v3 change] field visitedSystemIdentity [10] was name-changed redirectedToSystemIdentity [9]
+	redirectedToSystemIdentity	[9] SystemIdentity				OPTIONAL,
+
+	-- [T1.678 v3 change] field protocolSpecificParameters [11] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field signalingMsg [12] was changed to [10]
+	signalingMsg			[10] SET OF EncapsulatedSignalingMessage	OPTIONAL
+}
+
+Release ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+	callId				[3] CallIdentity,
+	location			[4] Location					OPTIONAL,
+	cause				[5] Cause					OPTIONAL,
+	contactAddresses		[6] PartyIdentity				OPTIONAL,
+
+	-- [T1.678 v3 change] field protocolSpecificParameters [7] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field signalingMsg [8] was changed to [7]
+	signalingMsg			[7] SET OF EncapsulatedSignalingMessage		OPTIONAL
+}
+
+ServingSystem ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+	systemIdentity			[3] SystemIdentity				OPTIONAL,
+
+	-- [T1.678 v3 change] field networkAddress [4] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field requestId [5] was changed to [4]
+	requestId			[4] CallIdentity				OPTIONAL,
+
+	-- [T1.678 v3 change] field registrationType [6] was changed to [5]
+	registrationType		[5] AddressRegistrationType			OPTIONAL,
+
+	-- [T1.678 v3 change] field registering [7] was changed to [6]
+	registering			[6] PartyIdentity				OPTIONAL,
+
+	-- [T1.678 v3 change] field requesting [8] was changed to [7]
+	requesting			[7] PartyIdentity				OPTIONAL,
+
+	-- [T1.678 v3 change] field registrar [9] was changed to [8]
+	registrar			[8] PartyIdentity				OPTIONAL,
+
+	-- [T1.678 v3 change] field requestAddressInfo [10] was changed to [9]
+	requestAddressInfo		[9] CHOICE
+	{
+		generic		[0] SEQUENCE OF SEQUENCE
+		{
+			address			[0] PartyIdentity,
+			expirationPeriod	[1] INTEGER
+		},	-- in seconds
+		sip		[1] SET OF SipHeader
+	}										OPTIONAL,
+	
+	-- [T1.678 v3 change] field responseAddressInfo [11] was changed to [10]
+	responseAddressInfo		[10] CHOICE
+	{
+		generic		[0] SEQUENCE OF SEQUENCE
+		{
+			address			[0] PartyIdentity,
+			expirationPeriod	[1] INTEGER
+		},	-- in seconds
+		sip		[1] SET OF SipHeader
+	}										OPTIONAL,
+
+	-- [T1.678 v3 change] field failureReason [12] was changed to [11]
+	failureReason			[11] Cause					OPTIONAL,
+
+	-- [T1.678 v3 change] field expirationPeriod [13] was changed to [12]
+	expirationPeriod		[12] CHOICE
+	{
+		generic		[0] INTEGER,			-- for all addresses, in seconds,
+		sip		[1] SipHeader
+	}										OPTIONAL,
+	-- maps SIP Expires header
+
+	-- [T1.678 v3 change] field protocolSpecificParameters [14] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field signalingMsg [15] was changed to [13]
+	signalingMsg			[13] SET OF EncapsulatedSignalingMessage	OPTIONAL
+}
+
+SubjectSignal ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+	callId				[3] CallIdentity				OPTIONAL,
+	signalingPartyId		[4] PartyIdentity				OPTIONAL,
+	signaledPartyId			[5] PartyIdentity				OPTIONAL,
+
+	-- [T1.678 v3 change] field input with [6] & [7] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field subjectMedia was changed from [8] MediaInformation (sequence) to [6] SDP (UTF8String)
+	subjectMedia			[6] SDP						OPTIONAL,
+
+	-- [T1.678 v3 change] field signal [9] was changed to [7]
+	signal				[7] SEQUENCE
+	{
+		-- Include at least one of the following three parameters:
+		dialedDigits			[0] VisibleString (SIZE (1..128))	OPTIONAL,
+		featureKey			[1] VisibleString (SIZE (1..128))	OPTIONAL,
+		otherSignalingInformation	[2] VisibleString (SIZE (1..128))	OPTIONAL
+
+		-- [T1.678 v3 change] field otherSignalingInformation [3] was removed from ATIS-1000678.b.2010
+		-- [T1.678 v3 change] field refer [4] was removed from ATIS-1000678.b.2010
+	},
+
+	-- [T1.678 v3 change] field protocolSpecificParameters [10] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field signalingMsg [11] was changed to [8]
+	signalingMsg			[8] SET OF EncapsulatedSignalingMessage		OPTIONAL
+}
+
+TerminationAttempt ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+	callId				[3] CallIdentity,
+	calling				[4] PartyIdentity,
+	called				[5] PartyIdentity				OPTIONAL,
+
+	-- [T1.678 v3 change] field location [6] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field associateMedia was changed from [7] MediaInformation (sequence) to [6] SDP (UTF8String)
+	associateMedia			[6] SDP						OPTIONAL,
+
+	-- [T1.678 v3 change] field redirectedFromInfo [8] was changed to [7]
+	redirectedFromInfo		[7] RedirectedFromInformation			OPTIONAL,
+
+	-- [T1.678 v3 change] field protocolSpecificParameters [9] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field signalingMsg [10] was changed to [8]
+	signalingMsg			[8] SET OF EncapsulatedSignalingMessage		OPTIONAL
+}
+
+
+UUContent ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+	callId				[3] CallIdentity				OPTIONAL,
+
+	-- [T1.678 v3 change] field content [4] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field protocolSpecificParameters [5] was removed from ATIS-1000678.b.2010
+
+	-- [T1.678 v3 change] field signalingMsg [6] was changed to [4]	and has become MANDATORY !!!		
+	signalingMsg			[4] SET OF EncapsulatedSignalingMessage
+}
+
+
+-- Parameter Definitions
+
+AddressRegistrationType ::= ENUMERATED
+{
+	unknown				(0),
+	registration			(1),
+	deregistration			(2),
+	registrationAndDeregistration	(3)
+}
+
+CallIdentity ::= SEQUENCE
+{
+	main			[0] UTF8String,
+	leg			[1] UTF8String		OPTIONAL
+}
+
+Cause ::= SEQUENCE
+{
+	signalingType		[0] UTF8String,
+	cause			[1] ParameterFormat	OPTIONAL
+}
+
+-- [T1.678 v3 change] definition CCAddress was removed from ATIS-1000678.b.2010 (defined in DeliveryIdentifier)
+
+-- [T1.678 v3 change] definition CCDeliveryFormat was removed from ATIS-1000678.b.2010 (defined in CCOpen)
+
+-- [T1.678 v3 change] definition ContentIdentifier was removed from ATIS-1000678.b.2010 (defined in CCOpen, CCClose, CCChange)
+
+-- [T1.678 v3 change] definition CorrelationIdentifier was removed from ATIS-1000678.b.2010 (defined in removed CorrelationID & ContentIdentifier)
+
+DeliveryIdentifier ::= CHOICE
+{
+	cccId			[0] CCCIdentity,
+	ccAddress		[1] NULL
+}
+
+ForkedCallInformation ::= SEQUENCE
+{
+	forkedCallID		[0] CallIdentity,
+	calledParty		[1] PartyIdentity
+}
+
+
+-- [T1.678 v3 change] definition EncapsulatedSignalingMessage was changed from a sequence to OCTET STRING
+EncapsulatedSignalingMessage ::= OCTET STRING
+
+
+-- [T1.678 v3 change] definitions of H225CallSignalling and H245 were removed
+-- [T1.678 v3 change] definitions of H323... were removed (used in MediaInformation & PartyIdentity [23]~[26])
+
+
+IpAddress ::= CHOICE
+{
+	-- [T1.678 v3 change] definition ipV4 & ipV6 are precisely defined to 4 & 16, rather than previous SIZE(4..16)
+	ipV4			[1] OCTET STRING(SIZE(4)),
+	ipV6			[2] OCTET STRING(SIZE(16))
+}
+
+-- [T1.678 v3 change] definition LocationInfo sequence was moved into Location
+Location ::= SET OF SEQUENCE
+{
+	locationType		[0] UTF8String,
+	location		[1] UTF8String
+}
+
+-- [T1.678 v3 change] definition MediaInformation was removed from ATIS-1000678.b.2010
+
+-- [T1.678 v3 change] definition MessageDirection was added for DigitalSignallingReporting
+MessageDirection ::= ENUMERATED
+{
+	fromSubject		(0),
+	toSubject		(1),
+	unknown			(2),
+	...
+}
+
+ParameterFormat ::= CHOICE
+{
+	generic			[0] UTF8String,				-- generic parameter representation
+	sip			[1] SET OF SipHeader			-- SIP header representation
+
+	-- [T1.678 v3 change] field h323 [2] was removed from ATIS-1000678.b.2010
+}
+
+-- Include those PartyIdentity identification elements necessary to uniquely identify the party
+-- known at the point in call or session and are authorized.
+-- At least one of the PartyIdentity parameters is required.
+
+PartyIdentity ::= SEQUENCE
+{
+	esn			[0] VisibleString (SIZE (8))			OPTIONAL,
+	imei			[1] VisibleString (SIZE (1..15))		OPTIONAL,
+	tei			[2] VisibleString (SIZE (1..15))		OPTIONAL,
+	spid			[3] VisibleString (SIZE (3..20))		OPTIONAL,
+	imsi			[4] VisibleString (SIZE (1..15))		OPTIONAL,
+	min			[5] VisibleString (SIZE (10))			OPTIONAL,
+	dn			[6] VisibleString (SIZE (1..15))		OPTIONAL,
+	userProvided		[7] VisibleString (SIZE (1..15))		OPTIONAL,
+	appearanceId		[8] VisibleString (SIZE (1..15))		OPTIONAL,
+	callingCardNum		[9] VisibleString (SIZE (1..20))		OPTIONAL,
+	ipAddress		[10] IpAddress					OPTIONAL,
+	x121			[11] VisibleString (SIZE (1..15))		OPTIONAL,
+	trunkId			[12] VisibleString (SIZE (1..32))		OPTIONAL,
+	subaddress		[13] OCTET STRING (SIZE (2..21))		OPTIONAL,
+	genericAddress		[14] SEQUENCE OF VisibleString (SIZE (1..32))	OPTIONAL,
+	genericDigits		[15] SEQUENCE OF VisibleString (SIZE (1..32))	OPTIONAL,
+	genericName		[16] SEQUENCE OF UTF8String			OPTIONAL,
+	port			[17] VisibleString (SIZE (1..32))		OPTIONAL,
+	context			[18] VisibleString (SIZE (1..64))		OPTIONAL,
+	isdnHighLayer		[19] OCTET STRING (SIZE (2..14))		OPTIONAL,
+	isdnLowLayer		[20] OCTET STRING (SIZE (2..14))		OPTIONAL,
+	uri			[21] SET OF UTF8String				OPTIONAL,
+	sipHeader		[22] SET OF SipHeader				OPTIONAL,
+
+	-- [T1.678 v3 change] field h323... [23]~[26] were removed from ATIS-1000678.b.2010
+
+	nai			[27] UTF8String					OPTIONAL,
+	mac802			[28] VisibleString				OPTIONAL,
+	fqdn			[29] UTF8String					OPTIONAL
+}
+
+PortNumber ::= INTEGER
+
+
+-- [T1.678 v3 change] definition ProtocolSpecificParameters was removed from ATIS-1000678.b.2010
+SDP ::= UTF8String
+
+SipHeader ::= UTF8String
+
+
+--  The following are optional messages:
+
+SurveillanceStatus ::= SEQUENCE
+{
+	caseId			[0] CaseIdentity,
+	reportingSystemId	[1] IAPSystemIdentity		OPTIONAL,
+	-- include to identify the system reporting the surveillance status,
+	-- when the underlying data carriage does not imply that system.
+	timestamp		[2] TimeStamp,
+	statusEventType		[3] SurveillanceStatusEventType,
+	currentStatus		[4] CurrentSurveillanceStatus
+}
+
+CurrentSurveillanceStatus ::= ENUMERATED
+{
+	fullyActive	(0),
+	partiallyActive	(1),
+	inactive	(2)
+}
+
+SurveillanceStatusEventType ::= ENUMERATED
+{
+	activation			(0),
+	deactivation			(1),
+	change				(2),
+	scheduledReport			(3)
+}
+
+FeatureManagement ::= SEQUENCE
+{
+	caseId			[0] CaseIdentity,
+	iAPSystemId		[1] IAPSystemIdentity					OPTIONAL,
+	-- include to identify the system containing the Intercept Access Function,
+	-- when the underlying data carriage does not imply that system.
+	timestamp		[2] TimeStamp,
+	subscriberId		[3] PartyIdentity					OPTIONAL,
+	-- Include to identify the subscriber to the service, when the identifier is
+	-- more specific than the intercept subject identity associated with the
+	-- CaseIdentity.
+	featureId		[4] UTF8String,
+	managementType		[5] FeatureManagementType,
+	activationInfo		[6] UTF8String						OPTIONAL,
+	-- include to identity information provided for use by a feature
+	-- (e.g., forward-to number for call forwarding), when feature activation
+	-- was attempted and information was provided for use by the feature.
+	failureReason		[7] UTF8String						OPTIONAL
+	-- include to indicate the reason for an unsuccessful feature activation or
+	-- deactivation, when the feature activation or deactivation was unsuccessful.
+}
+
+FeatureManagementType ::= ENUMERATED
+{
+	activation	(0),
+	deactivation	(1)
+}
+
+
+IAPSystemIdentity ::= CHOICE
+{
+	string			[1] VisibleString (SIZE (1..15)),
+	-- Used for backwards compatibility with J-STD-025-B.
+	iAPSystemIdentityType	[2] IAPSystemIdentityType
+	-- Used for reporting IP address formats and reporting multiple identity types.
+}
+
+IAPSystemIdentityType ::= SEQUENCE
+{
+	ipV4			[1] OCTET STRING (SIZE(4))				OPTIONAL,
+	ipV6			[2] OCTET STRING (SIZE(16))				OPTIONAL,
+	fqdn			[3] OCTET STRING					OPTIONAL,
+	-- Fully Qualified Domain Name and the trailing “.” may not be included.
+	other			[4] OCTET STRING					OPTIONAL
+}
+
+SystemIdentity ::= IAPSystemIdentity
+
+-- [T1.678 v3 change] definition ProtocolType was removed (due to the removal of CCAddress) from ATIS-1000678.b.2010
+
+
+--
+-- From J-STD-025-B
+--
+CCCIdentity ::= CHOICE
+{
+    combCCC     [0] VisibleString (SIZE (1..20)),
+    sepCCCpair  [1] SEQUENCE
+    {
+	sepXmitCCC  [0] VisibleString (SIZE (1..20)),
+	sepRecvCCC  [1] VisibleString (SIZE (1..20))
+    },
+    indXmitCCC  [2] VisibleString (SIZE (1..20)),
+    indRecvCCC  [3] VisibleString (SIZE (1..20)), 
+    indCCC      [4] VisibleString (SIZE (1..20))
+}
+
+AlertingSignal ::= ENUMERATED
+{
+	notUsed              (0),
+	alertingPattern0     (1),
+	alertingPattern1     (2),
+	alertingPattern2     (3),
+	alertingPattern3     (4),
+	alertingPattern4     (5),
+	callWaitingPattern1  (6),
+	callWaitingPattern2  (7),
+	callWaitingPattern3  (8),
+	callWaitingPattern4  (9),
+	bargeInTone          (10)
+}
+
+AudibleSignal ::= ENUMERATED
+{
+	notUsed                 (0),
+	dialTone                (1),
+	recallDialTone          (2),
+	ringbackTone            (3),
+	reorderTone             (4),
+	busyTone                (5),
+	confirmationTone        (6),
+	expensiveRouteTone      (7),
+	messageWaitingTone      (8),
+	receiverOffHookTone     (9),
+	specialInfoTone         (10),
+	denialTone              (11),
+	interceptTone           (12),
+	answerTone              (13),
+	tonesOff                (14),
+	pipTone                 (15),
+	abbreviatedIntercept    (16),
+	abbreviatedCongestion   (17), -- was "Congession"
+	warningTone             (18),
+	dialToneBurst           (19),
+	numberUnObtainableTone  (20),
+	authenticationFailTone  (21)
+}
+
+TerminalDisplayInfo ::=   SEQUENCE
+{
+    generalDispaly        [0]  VisibleString (SIZE (1..80))    OPTIONAL,
+    calledNumber          [1]  VisibleString (SIZE (1..40))    OPTIONAL,
+    callingNumber         [2]  VisibleString (SIZE (1..40))    OPTIONAL,
+    callingName           [3]  VisibleString (SIZE (1..40))    OPTIONAL,
+    orignalCalledNumber   [4]  VisibleString (SIZE (1..40))    OPTIONAL,
+    lastRedirectingNumber [5]  VisibleString (SIZE (1..40))    OPTIONAL,
+    redirectingName       [6]  VisibleString (SIZE (1..40))    OPTIONAL,
+    redirectingReason     [7]  VisibleString (SIZE (1..40))    OPTIONAL,
+    messageWaitingNotif   [8]  VisibleString (SIZE (1..40))    OPTIONAL
+}
+
+TransitCarrierIdentity ::= VisibleString (SIZE (3..7))
+
+RedirectedFromInformation ::= SEQUENCE
+{
+    lastRedirecting   [0] PartyIdentity     OPTIONAL,
+    originalCalled    [1] PartyIdentity     OPTIONAL,
+    numRedirections   [2] INTEGER (1..100)  OPTIONAL
+}
+
+CaseIdentity  ::= VisibleString (SIZE (1..25)) 
+
+TimeStamp ::= GeneralizedTime
+
+
+END -- of ATIS-LAES-VoIP-Abstract-Syntax-Module-v3

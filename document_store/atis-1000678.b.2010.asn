@@ -1,0 +1,870 @@
+ 
+-- ASN.1 for ATIS-1000678.b.2010 
+ 
+B-2010-ATIS-LAES-VoP-Abstract-Syntax-Module  
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) cii(0) common (0) version-4(3)} 
+DEFINITIONS IMPLICIT TAGS ::= 
+ 
+BEGIN 
+ 
+IMPORTS 
+ 
+CCCIdentity, CaseIdentity, TimeStamp, AlertingSignal, AudibleSignal, TerminalDisplayInfo, 
+TransitCarrierIdentity, RedirectedFromInformation, BearerCapability 
+
+
+FROM Laesp-j-std-025-b  
+{iso(1) member-body(2) us(840) tia(113737) laes(2) tr45(0) j-std-025(0) j-std-025-b(2) version-1(0)} 
+ 
+AliasAddress, TransportAddress 
+FROM H-225-0  
+{itu-t(0) recommendation(0) h(8) h225-0(2250) version(0) v2(2)} 
+ -- The Alias Address and Transport Address parameters are only found in  
+ -- Versions 2 and later of H.225.0. 
+ 
+AddressPattern 
+FROM H-225-0  
+{itu-t(0) recommendation(0) h(8) h225-0(2250) version(0) v4(4)} 
+ -- The AddressPattern parameter is only found in Versions 4 and later of H.225.0. 
+ 
+H225RAS 
+FROM B-2010-ATIS-LAES-VoP-H323specific-Abstract-Syntax-Module  
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) cii(0) h323specific (1) version-4(3)} 
+ 
+B-2010-CCDeliveryHeaderModuleOID 
+FROM B-2010-CCDeliveryHeaderModule  
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) ccdeliveryheader(1) version-4(3)}; 
+ 
+B-2010-ATIS-LAES-VoP-Abstract-Syntax-Module-OID ::= OBJECT IDENTIFIER     
+ -- OID for ATIS-LAES-VoP-Abstract-Syntax-Module 
+ 
+LAESProtocol ::= CHOICE { 
+     enhancedProtocol      EnhancedProtocol, 
+     laesMessage   LaesMessage 
+} 
+ 
+EnhancedProtocol ::= SEQUENCE { 
+     protocolIdentifier   B-2010-ATIS-LAES-VoP-Abstract-Syntax-Module-OID, 
+     laesMessage   LaesMessage 
+} 
+ 
+LaesMessage ::= CHOICE { 
+     answer     [1] Answer, 
+     ccClose    [2] CCClose, 
+     ccOpen    [3] CCOpen, 
+     change     [4] Change, 
+     origination   [5] Origination, 
+     null-6   [6] NULL,    -- reserved by J-STD-025A [1] 
+     redirection   [7] Redirection, 
+     release    [8] Release, 
+     servingSystem   [9] ServingSystem, 
+     termAttempt   [10] TerminationAttempt, 
+--   connTest    [11] ConnectionTest,       see Annex F of J-STD-025A [1] 
+     confPartyChange  [12] ConferencePartyChange,    
+     connection   [13] Connection, 
+     connectBreak   [14] ConnectionBreak, 
+     dialedDgtExtrn   [15] DialedDigitExtraction, 
+     networkSignal   [16] NetworkSignal, 
+     subjectSignal   [17] SubjectSignal, 
+     directSignalReporting  [18] DirectSignalReporting, 
+     mediaAndAddressReporting [19] MediaAndAddressReporting, 
+     ccChange   [20] CCChange, 
+     ccUnavailable  [21] CCUnavailable, 
+--  surveillanceStatus      [22] SurveillanceStatus,    see Annex D of this Standard 
+--  featureManagement  [23] FeatureManagement,    see Annex D of this Standard 
+     uuContent                [24] UUContent 
+} 
+ 
+-- Message Definitions 
+ 
+Answer ::= SEQUENCE { 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity    OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     callId    [3] CallIdentity, 
+     answering    [4] PartyIdentity    OPTIONAL, 
+     location     [5] Location     OPTIONAL, 
+     answeringMedia   [6] MediaInformation     OPTIONAL, 
+
+
+     protocolSpecificParameters   [7] ProtocolSpecificParameters  
+ OPTIONAL, 
+     signalingMsg   [8] SET OF EncapsulatedSignalingMessage     OPTIONAL  
+} 
+ 
+CCChange ::= SEQUENCE  { 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity    OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     contentIdentifier   [3] ContentIdentifier, 
+     deliveryIdentifier   [4] DeliveryIdentifier, 
+ 
+    -- Include at least one of the two following parameters. 
+     subjectMedia   [5] MediaInformation      OPTIONAL, 
+     associateMedia   [6] MediaInformation      OPTIONAL, 
+ 
+     protocolSpecificParameters   [7] ProtocolSpecificParameters  
+ OPTIONAL, 
+     signalingMsg   [8] SET OF EncapsulatedSignalingMessage    OPTIONAL  
+} 
+ 
+CCClose ::= SEQUENCE  { 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity    OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     contentIdentifier   [3] ContentIdentifier, 
+     deliveryIdentifier   [4] DeliveryIdentifier, 
+     protocolSpecificParameters   [5] ProtocolSpecificParameters  
+ OPTIONAL, 
+     signalingMsg   [6] SET OF EncapsulatedSignalingMessage     OPTIONAL  
+} 
+ 
+CCOpen ::= SEQUENCE  { 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity    OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     contentIdentifier   [3] ContentIdentifier,  
+     deliveryIdentifier   [4] DeliveryIdentifier, 
+     ccDeliveryFormat     [5]  CCDeliveryFormat,                 
+ 
+      -- Include at least one of the two following parameters. 
+     subjectMedia   [6] MediaInformation     OPTIONAL, 
+     associateMedia   [7] MediaInformation     OPTIONAL, 
+ 
+     protocolSpecificParameters   [8] ProtocolSpecificParameters  
+ OPTIONAL, 
+     signalingMsg   [9] SET OF EncapsulatedSignalingMessage   OPTIONAL 
+} 
+ 
+CCUnavailable ::= SEQUENCE  { 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity    OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     callId    [3] CallIdentity, 
+     unavailabilityReason  [4] VisibleString    OPTIONAL, 
+     protocolSpecificParameters   [5] ProtocolSpecificParameters  
+ OPTIONAL, 
+     signalingMsg   [6] SET OF EncapsulatedSignalingMessage   OPTIONAL 
+} 
+ 
+Change ::= SEQUENCE { 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity    OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     previous     [3] SEQUENCE OF    
+        call-identities    SEQUENCE OF CallIdentity,   
+     resulting    [4] SEQUENCE OF SEQUENCE {   
+        call-identities   [0] SEQUENCE OF CallIdentity,    
+        deliveryIdentifier      [1] DeliveryIdentifier      OPTIONAL}, 
+     protocolSpecificParameters  [5] ProtocolSpecificParameters   OPTIONAL, 
+     signalingMsg   [6] SET OF EncapsulatedSignalingMessage   OPTIONAL 
+} 
+ 
+
+
+Connection ::= SEQUENCE  { 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity    OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     callId    [3] SEQUENCE OF CallIdentity, 
+         
+           -- Include at least one of the following two parameters  
+     connectedParties    [4] SEQUENCE OF PartyIdentity  OPTIONAL, 
+     newParties    [5] SEQUENCE OF PartyIdentity  OPTIONAL, 
+     connectedMedia   [6] MediaInformation      OPTIONAL, 
+     protocolSpecificParameters   [7] ProtocolSpecificParameters  
+ OPTIONAL, 
+     signalingMsg   [8] SET OF EncapsulatedSignalingMessage   OPTIONAL  
+} 
+ 
+ConnectionBreak ::= SEQUENCE  { 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity      OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     callId    [3] SEQUENCE OF CallIdentity, 
+         
+    -- Include at least one of the following three parameters  
+     removedParties    [4] SEQUENCE OF PartyIdentity  OPTIONAL, 
+     remainingParties    [5] SEQUENCE OF PartyIdentity  OPTIONAL, 
+     droppedParties   [6] SEQUENCE OF PartyIdentity  OPTIONAL, 
+     suspendedMedia   [7] MediaInformation      OPTIONAL, 
+     protocolSpecificParameters   [8] ProtocolSpecificParameters  
+ OPTIONAL, 
+     signalingMsg   [9] SET OF EncapsulatedSignalingMessage    OPTIONAL  
+} 
+ 
+ConferencePartyChange ::= SEQUENCE  { 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity      OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     callId    [3] SEQUENCE OF CallIdentity, 
+         
+    -- Include at least one of the following three parameters  
+     communicatingParties   [4] SEQUENCE OF PartyIdentity  OPTIONAL, 
+     removedParties     [5] SEQUENCE OF PartyIdentity  OPTIONAL, 
+     joinedParties   [6] SEQUENCE OF PartyIdentity  OPTIONAL, 
+     protocolSpecificParameters   [7] ProtocolSpecificParameters  
+ OPTIONAL, 
+     signalingMsg   [8] SET OF EncapsulatedSignalingMessage    OPTIONAL  
+} 
+ 
+DialedDigitExtraction ::= SEQUENCE  { 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity     OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     callId    [3] CallIdentity, 
+     digits    [4] VisibleString (SIZE (1..32)), 
+     protocolSpecificParameters   [5] ProtocolSpecificParameters  
+ OPTIONAL 
+} 
+ 
+DirectSignalReporting ::= SEQUENCE  { 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity     OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     correlationID   [3] CorrelationIdentifier,    
+     protocolSpecificParameters   [4] ProtocolSpecificParameters  
+ OPTIONAL, 
+     signalingMsg   [5] SET OF EncapsulatedSignalingMessage 
+} 
+ 
+MediaAndAddressReporting ::= SEQUENCE  { 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity    OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     callId    [3] CallIdentity, 
+ 
+    -- Include at least one of the following three parameters.  
+
+
+     subjectMedia   [4] MediaInformation     OPTIONAL, 
+     associateMedia   [5] SET OF MediaInformation  OPTIONAL, 
+     redirectedToPartyMedia           [6]  MediaInformation                                           
+ OPTIONAL, 
+ 
+     subjectContactAddresses  [7] PartyIdentity   OPTIONAL, 
+     associateContactAddresses [8] PartyIdentity   OPTIONAL, 
+     redirectedToPartyContactAddresses [9] PartyIdentity                                                     
+ OPTIONAL, 
+     mediaAndAddressReportingCause  [10] VisibleString, 
+     protocolSpecificParameters  [11] ProtocolSpecificParameters    OPTIONAL, 
+     signalingMsg   [12] SET OF EncapsulatedSignalingMessage   OPTIONAL  
+} 
+ 
+NetworkSignal ::= SEQUENCE  { 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity     OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     callId    [3] CallIdentity    OPTIONAL, 
+     signaledToPartyId     [4] PartyIdentity    OPTIONAL, 
+     subjectContactAddresses  [5] PartyIdentity    OPTIONAL, 
+     associateContactAddresses [6] PartyIdentity    OPTIONAL, 
+     associateMedia   [7] MediaInformation     OPTIONAL, 
+ 
+   -- Include at least one of the following five parameters. 
+     alertingSignal   [8] AlertingSignal    OPTIONAL, 
+     subjectAudibleSignal  [9] AudibleSignal    OPTIONAL, 
+     terminalDisplayInfo  [10] TerminalDisplayInfo   OPTIONAL, 
+     other    [11] UTF8String    OPTIONAL, 
+     refer    [12] CHOICE { 
+     sip [0] SET OF SipHeader, 
+     h323 [1] H323CallTransfer} OPTIONAL, 
+ 
+     protocolSpecificParameters   [13] ProtocolSpecificParameters    OPTIONAL, 
+     signalingMsg   [14] SET OF EncapsulatedSignalingMessage OPTIONAL  
+} 
+ 
+Origination ::= SEQUENCE { 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity     OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     callId    [3] CallIdentity, 
+     calling     [4] PartyIdentity     OPTIONAL, 
+     called     [5] PartyIdentity    OPTIONAL, 
+     input  CHOICE { 
+  userInput   [6] CHOICE { 
+     generic VisibleString,  
+     specific PartyIdentity}, 
+     
+  translationInput  [7] CHOICE { 
+     generic VisibleString, 
+     specific PartyIdentity}}, 
+   
+     location     [8] Location     OPTIONAL, 
+     transitCarrierId   [9] TransitCarrierIdentity    OPTIONAL, 
+     subjectMedia   [10] MediaInformation    OPTIONAL, 
+     originationCause   [11] VisibleString, 
+     protocolSpecificParameters   [12] ProtocolSpecificParameters     OPTIONAL, 
+     signalingMsg   [13] SET OF EncapsulatedSignalingMessage  OPTIONAL, 
+     forkedCalls   [14] SET OF ForkedCallInformation                    
+ OPTIONAL 
+} 
+ 
+Redirection ::= SEQUENCE  { 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity     OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     callId    [3] CallIdentity, 
+     newCallId    [4] CallIdentity     OPTIONAL, 
+     redirectedFrom   [5] PartyIdentity     OPTIONAL, 
+     redirectedTo   [6] PartyIdentity     OPTIONAL, 
+     transitCarrierId   [7] TransitCarrierIdentity    OPTIONAL, 
+     subjectMedia   [8] MediaInformation      OPTIONAL, 
+
+
+     associateMedia   [9] MediaInformation      OPTIONAL, 
+     visitedSystemIdentity  [10] SystemIdentity     OPTIONAL, 
+     protocolSpecificParameters   [11] ProtocolSpecificParameters    OPTIONAL, 
+     signalingMsg   [12] SET OF EncapsulatedSignalingMessage  OPTIONAL  
+} 
+ 
+Release ::= SEQUENCE  { 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity     OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     callId    [3] CallIdentity, 
+     location     [4] Location      OPTIONAL, 
+     cause    [5] Cause      OPTIONAL, 
+     contactAddresses       [6] PartyIdentity     OPTIONAL, 
+     protocolSpecificParameters   [7] ProtocolSpecificParameters  
+ OPTIONAL, 
+     signalingMsg   [8] SET OF EncapsulatedSignalingMessage    OPTIONAL 
+} 
+ 
+ServingSystem ::= SEQUENCE  { 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity    OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     systemIdentity   [3] SystemIdentity   OPTIONAL,  
+     networkAddress   [4] IpAddress    OPTIONAL,  
+     requestId    [5] CallIdentity   OPTIONAL, 
+     registrationType   [6] AddressRegistrationType                                
+ OPTIONAL, 
+     registering   [7] PartyIdentity                                                    
+ OPTIONAL, 
+     requesting   [8] PartyIdentity   OPTIONAL, 
+     registrar    [9] PartyIdentity                                                    
+ OPTIONAL,  
+ 
+     requestAddressInfo  [10] CHOICE  {   
+    generic  [0] SEQUENCE OF SEQUENCE  { 
+          address   [0] PartyIdentity, 
+          expirationPeriod  [1] INTEGER}, -- in seconds 
+    sip  [1] SET OF SipHeader}  OPTIONAL, 
+  
+     responseAddressInfo  [11] CHOICE  {   
+    generic  [0] SEQUENCE OF SEQUENCE  { 
+          address   [0] PartyIdentity, 
+          expirationPeriod  [1] INTEGER},  -- in seconds 
+    sip  [1] SET OF SipHeader}   OPTIONAL, 
+ 
+     failureReason   [12] Cause      OPTIONAL, 
+ 
+     expirationPeriod   [13] CHOICE  {   
+   generic   [0] INTEGER,   -- for all addresses, in seconds 
+   sip   [1] SipHeader}   OPTIONAL,    
+        -- Maps SIP Expires header 
+ 
+     protocolSpecificParameters  [14] ProtocolSpecificParameters    OPTIONAL, 
+     signalingMsg   [15] SET OF EncapsulatedSignalingMessage OPTIONAL  
+} 
+ 
+SubjectSignal ::= SEQUENCE  { 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity   OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     callId    [3] CallIdentity    OPTIONAL, 
+     signalingPartyId   [4] PartyIdentity    OPTIONAL, 
+     signaledPartyId   [5] PartyIdentity    OPTIONAL, 
+     input  CHOICE   { 
+  userInput   [6] CHOICE { 
+      generic VisibleString, 
+      specific PartyIdentity}, 
+     
+  translationInput  [7] CHOICE { 
+      generic VisibleString, 
+      specific PartyIdentity} 
+  }, 
+
+
+     subjectMedia   [8] MediaInformation    OPTIONAL, 
+ 
+     signal    [9] SEQUENCE { 
+ 
+    -- Include at least one of the following five parameters 
+           switchhookFlash   [0] VisibleString (SIZE (1..128)) 
+ OPTIONAL, 
+           dialedDigits   [1] VisibleString (SIZE (1..128))  OPTIONAL, 
+           featureKey     [2] VisibleString (SIZE (1..128))  OPTIONAL, 
+           otherSignalingInformation [3] VisibleString (SIZE (1..128))  OPTIONAL, 
+          refer    [4] CHOICE {  
+    sip   [0] SET OF SipHeader, 
+    h323   [1] H323CallTransfer } OPTIONAL}, 
+ 
+     protocolSpecificParameters   [10] ProtocolSpecificParameters    OPTIONAL, 
+     signalingMsg   [11] SET OF EncapsulatedSignalingMessage OPTIONAL  
+} 
+ 
+TerminationAttempt ::= SEQUENCE { 
+ 
+     caseId    [0] CaseIdentity, 
+     iAPSystemId   [1] IAPSystemIdentity    OPTIONAL, 
+     timestamp    [2] TimeStamp, 
+     callId    [3] CallIdentity, 
+     calling     [4] PartyIdentity, 
+     called     [5] PartyIdentity    OPTIONAL, 
+     location     [6] Location     OPTIONAL, 
+     associateMedia   [7] MediaInformation     OPTIONAL, 
+     redirectedFromInfo   [8] RedirectedFromInformation  OPTIONAL, 
+     protocolSpecificParameters   [9] ProtocolSpecificParameters  
+ OPTIONAL, 
+     signalingMsg   [10] SET OF EncapsulatedSignalingMessage OPTIONAL 
+} 
+ 
+UUContent ::= SEQUENCE  { 
+     caseId   [0] CaseIdentity, 
+     iAPSystemId  [1] IAPSystemIdentity    OPTIONAL, 
+     timestamp   [2] TimeStamp, 
+     callId   [3] CallIdentity   OPTIONAL, 
+     content     [4] ProtocolSpecificParameters  OPTIONAL,  
+     protocolSpecificParameters  [5] ProtocolSpecificParameters OPTIONAL, 
+     signalingMsg  [6] SET OF EncapsulatedSignalingMessage   OPTIONAL 
+} 
+ 
+-- Parameter Definitions 
+ 
+AddressRegistrationType ::= ENUMERATED { 
+     unknown   (0), 
+     registration   (1), 
+     deregistration   (2), 
+     registrationAndDeregistration  (3) 
+} 
+ 
+AdmissionControlStatus ::= ENUMERATED { 
+     perCallPermissionToOriginateCall   (0), 
+     per-CallPermissionToReceiveCall    (1), 
+     perCallRejectionOfCallOrigination   (2), 
+     per-CallRejectionOfCallTermination  (3), 
+     pre-grantedPermissionToOriginateCalls     (4), 
+     pre-grantedPermissionToAnswerCalls  (5), 
+     pre-grantedPermissionToOriginateAndAnswerCalls  (6) 
+} 
+ 
+CallIdentity ::= SEQUENCE { 
+     main  [0] UTF8String, 
+     leg  [1] UTF8String  OPTIONAL 
+} 
+ 
+Cause ::= SEQUENCE { 
+     signalingType  [0] UTF8String,  
+     cause   [1] ParameterFormat  OPTIONAL 
+} 
+ 
+
+
+CCAddress ::= SEQUENCE  
+{ 
+     leaIPAddress     [0] IpAddress, 
+     leaPortNumber  [1] PortNumber, 
+     leaProtocol [2] ProtocolType  OPTIONAL 
+} 
+ 
+CCDeliveryFormat ::=  CHOICE { 
+     cc-APDU [0]  B-2010-CCDeliveryHeaderModuleOID,     -- see clause 6.2.2 
+     scte [1]  VisibleString            -- set to decimal 0 to indicate SCTE format defined 
+in [REF 23] 
+} 
+ 
+ContentIdentifier ::= CHOICE { 
+     correlationID [0] CorrelationIdentifier, 
+     callID  [1] CallIdentity 
+} 
+ 
+CorrelationIdentifier ::= OCTET STRING 
+ 
+DeliveryIdentifier ::= CHOICE  { 
+     cccId [0] CCCIdentity, 
+     ccAddress [1] CCAddress 
+} 
+ 
+EncapsulatedSignalingMessage ::= SEQUENCE { 
+     signalingProt   [0] UTF8String, -- Contains the MimeType registered for this signaling protocol 
+      -- If none is registered, this field contains the value 'unknown' 
+     sigMsg   [1] OCTET STRING 
+} 
+ 
+ForkedCallInformation::= SEQUENCE { 
+     forkedCallID [0] CallIdentity, 
+     calledParty [1] PartyIdentity 
+} 
+ 
+H225CallSignaling ::= OCTET STRING 
+  -- Populated with the H.225 parameter called H323-UserInformation as provided in 
+  -- Annex H of ITU-T Recommendation H.225. 
+ 
+H245 ::= OCTET STRING 
+  -- Populated with the H.245 parameter called MultimediaSystemControlMessage from 
+  -- Annex A of ITU-T Recommendation H.245. 
+ 
+ 
+H323CallTransfer ::= OCTET STRING 
+  -- h323MediaParameter parameter may be encoded with one of the H.323-defined media  
+  -- parameters, as indicated in the h323MediaParameterType parameter 
+  
+H323Media ::= SEQUENCE { 
+     h323MediaParameterType  [0] H323MediaParameterType, 
+     h323MediaParameter  [1] OCTET STRING 
+} 
+ 
+H323MediaParameterType ::= ENUMERATED { 
+     fastStart    (0), 
+     openLogicalChannel   (1), 
+     openLogicalChannelAck   (2), 
+     openLogicalChannelReject  (3), 
+     openLogicalChannelConfirm (4), 
+     closeLogicalChannel  (5), 
+     closeLogicalChannelAck   (6), 
+     requestChannelClose   (7), 
+     requestChannelCloseAck   (8), 
+     requestChannelCloseReject (9), 
+     requestChannelCloseRelease      (10) 
+} 
+ 
+IAPSystemIdentity ::= CHOICE { 
+     string   [1] VisibleString (SIZE (1..15)) , 
+    -- Used for backwards compatibiity with J-STD-025-B 
+     iAPSystemIdentityType [2] IAPSystemIdentityType 
+
+
+    -- Used for reporting IP address formats and reporting multiple identity types 
+} 
+ 
+IAPSystemIdentityType ::= SEQUENCE { 
+     ipV4 [1] IPvalue  OPTIONAL, 
+     ipV6 [2] IPvalue  OPTIONAL, 
+     fqdn [3] OCTET STRING  OPTIONAL, 
+     -- Fully Qualified Domain Name and the trailing "." may not be included 
+     other [4] OCTET STRING  OPTIONAL 
+} 
+ 
+IpAddress ::= CHOICE  { 
+     ipV4 [1] IPvalue, 
+     ipV6 [2] IPvalue 
+} 
+ 
+IPvalue ::=  OCTET STRING (SIZE(4..16))   -- binary encoding 
+ 
+Location ::= SEQUENCE { 
+        locationType  [0] UTF8String, 
+        location [1] UTF8String 
+} 
+ 
+MediaInformation ::= SEQUENCE { 
+     bearerCapability [0] BearerCapability      OPTIONAL, 
+     characteristics [1] CHOICE {  
+ sdp  [0] UTF8String, -- SDP information as defined in RFC 2327 or RFC 3108 
+ h323Media  [1] H323Media, 
+ other   [2] SEQUENCE {   
+  type  [0] OBJECT IDENTIFIER, 
+  value  [1] OCTET STRING}}   OPTIONAL, 
+ 
+     status  [2] ENUMERATED { 
+ requested  (0), -- Indicates a SIP/SDP Offer/Answer from a User Agent per RFC 3264 [REF 21] 
+ granted   (1),  -- For SIP, applies when SDP Offer/Answer is accepted (200 OK or ACK) 
+ ejected   (2),  -- For SIP, applies when SDP Offer/Answer is rejected (4xx/5xx/6xx or BYE) 
+ relayed   (3)  -- Indicates a SIP/SDP Offer/Answer relayed by a Proxy per RFC 3264  
+    }      OPTIONAL 
+} 
+ 
+ParameterFormat ::= CHOICE { 
+     generic  [0] UTF8String,  -- generic parameter representation 
+     sip   [1] SET OF SipHeader, -- SIP header representation 
+     h323  [2] OCTET STRING   -- H.323 parameter representation 
+} 
+ 
+-- Include those PartyIdentity identification elements necessary to uniquely identify the party known  
+-- at the point in call or session and are authorized. At least one of the PartyIdentity parameters is required. 
+ 
+PartyIdentity ::= SEQUENCE { 
+  esn    [0] VisibleString (SIZE (8))    OPTIONAL, 
+  imei    [1] VisibleString (SIZE (1..15))   OPTIONAL, 
+  tei    [2] VisibleString (SIZE (1..15))   OPTIONAL, 
+  spid    [3] VisibleString (SIZE (3..20))   OPTIONAL, 
+  imsi    [4] VisibleString (SIZE (1..15))   OPTIONAL, 
+  min    [5] VisibleString (SIZE (10))   OPTIONAL, 
+  dn    [6] VisibleString (SIZE (1..15))   OPTIONAL, 
+  userProvided  [7] VisibleString (SIZE (1..15))   OPTIONAL, 
+  appearanceId  [8] VisibleString (SIZE (1..15))   OPTIONAL, 
+  callingCardNum  [9] VisibleString (SIZE (1..20))   OPTIONAL, 
+  ipAddress  [10] IpAddress     OPTIONAL, 
+  x121    [11] VisibleString (SIZE (1..15))  OPTIONAL, 
+  trunkId   [12] VisibleString (SIZE (1..32))  OPTIONAL, 
+  subaddress   [13] OCTET STRING (SIZE (2..21))   OPTIONAL, 
+  genericAddress  [14] SEQUENCE OF VisibleString (SIZE (1..32)) OPTIONAL, 
+  genericDigits  [15] SEQUENCE OF VisibleString (SIZE (1..32)) OPTIONAL, 
+  genericName  [16] SEQUENCE OF UTF8String   OPTIONAL, 
+
+
+  port    [17] VisibleString (SIZE (1..32))  OPTIONAL, 
+  context   [18] VisibleString (SIZE (1..64))  OPTIONAL, 
+  isdnHighLayer  [19] OCTET STRING (SIZE (2..14))   OPTIONAL, 
+  isdnLowLayer  [20] OCTET STRING (SIZE (2..14))   OPTIONAL, 
+  uri   [21]  SET OF UTF8String   OPTIONAL, 
+  sipHeader  [22]  SET OF SipHeader    OPTIONAL, 
+  h323AliasAddress [23] SEQUENCE OF AliasAddress   OPTIONAL, 
+  h323AddressPattern   [24] SEQUENCE OF AddressPattern  OPTIONAL, 
+  h323RASAddress [25] SEQUENCE OF TransportAddress  OPTIONAL, 
+  h323CallSigAddress   [26] SEQUENCE OF TransportAddress  OPTIONAL, 
+  nai    [27] UTF8String     OPTIONAL, 
+  mac802  [28] VisibleString     OPTIONAL, 
+  fqdn   [29] UTF8String     OPTIONAL 
+} 
+ 
+PortNumber ::=  INTEGER 
+ 
+ProtocolSpecificParameters ::= CHOICE { 
+     sip  [0] SET {  --  SIP header/body representation 
+      sipHeader   [0] SET OF SipHeader  OPTIONAL,  
+          sipBody  [1] SET OF SEQUENCE { 
+            sipBodyHeader       [0] SET OF SipHeader,         
+                sipBodyContents [1] OCTET STRING } OPTIONAL},   
+  
+     h323 [1] SET {  -- H.323 parameter representation 
+                h225RAS  [0] SET OF H225RAS  OPTIONAL, 
+                 h225CS  [1] SET OF H225CallSignaling  OPTIONAL, 
+               h245  [2] SET OF H245   OPTIONAL} 
+} 
+ 
+ProtocolType ::= CHOICE { 
+     udp [0] NULL, 
+     tcp [1] NULL, 
+     other [2] UTF8String 
+} 
+ 
+SipHeader ::= UTF8String 
+ 
+SystemIdentity ::= IAPSystemIdentity 
+ 
+--  The following are the optional messages 
+ 
+SurveillanceStatus  ::= SEQUENCE  { 
+     caseId   [0] CaseIdentity, 
+     reportingSystemId   [1] IAPSystemIdentity   OPTIONAL, 
+  -- include to identify the system reporting the surveillance status,   
+  -- when the underlying data carriage does not imply that system. 
+ 
+     timestamp  [2] TimeStamp, 
+     statusEventType  [3] SurveillanceStatusEventType, 
+     currentStatus  [4] CurrentSurveillanceStatus 
+} 
+ 
+FeatureManagement  ::= SEQUENCE  { 
+     caseId  [0] CaseIdentity, 
+     iAPSystemId [1] IAPSystemIdentity    OPTIONAL, 
+   -- include to identify the system containing the Intercept Access 
+   -- Function, when the underlying data carriage does not imply that system. 
+     timestamp [2] TimeStamp, 
+     subscriberId [3] PartyIdentity     OPTIONAL, 
+   -- Include to identify the subscriber to the service, when the identifier is 
+   -- more specific than the intercept subject identity associated with the CaseIdentity. 
+     featureId [4] UTF8String, 
+     managementType [5] FeatureManagementType, 
+     activationInfo [6] UTF8String     OPTIONAL, 
+   -- include to identity information provided for use by a feature  
+   -- (e.g., forward-to number for call forwarding), when feature activation  
+   -- was attempted and information was provided for use by the feature. 
+     failureReason [7] UTF8String     OPTIONAL 
+   -- include to indicate the reason for an unsuccessful feature activation or  
+   -- deactivation, when the feature activation or deactivation was unsuccessful. 
+} 
+
+
+ 
+--  optional messages parameters 
+ 
+CurrentSurveillanceStatus ::= ENUMERATED { 
+     fullyActive (0), 
+     partiallyActive (1), 
+     inactive (2) 
+} 
+ 
+FeatureManagementType ::= ENUMERATED { 
+     activation (0), 
+     deactivation (1) 
+} 
+ 
+SurveillanceStatusEventType ::= ENUMERATED { 
+     activation (0), 
+     deactivation (1), 
+     change  (2), 
+     scheduledReport (3) 
+} 
+ 
+ 
+END  -- of B-2010-ATIS-LAES-VoP-Abstract-Syntax-Module 
+ 
+ 
+B-2010-CCDeliveryHeaderModule  
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) ccdeliveryheader(1) version-4(3)}  
+ 
+DEFINITIONS IMPLICIT TAGS ::= 
+ 
+BEGIN 
+ 
+IMPORTS 
+ 
+TimeStamp, CaseIdentity 
+FROM Laesp-j-std-025-b  
+{iso(1) member-body(2) us(840) tia(113737) laes(2) tr45(0) j-std-025(0) j-std-025-b(2) version-1(0)} 
+ 
+ContentIdentifier, IAPSystemIdentity 
+FROM B-2010-ATIS-LAES-VoP-Abstract-Syntax-Module 
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) cii(0) common(0) version-4(3)}; 
+ 
+B-2010-CCDeliveryHeaderModuleOID ::= OBJECT IDENTIFIER -- OID for CCDeliveryHeaderModule 
+ 
+CC-APDU ::= SEQUENCE { 
+     ccDeliveryHeader  [0] CCDeliveryHeader   OPTIONAL,  
+     payload     [1] OCTET STRING 
+} 
+ 
+CCDeliveryHeader ::= SEQUENCE { 
+     correlationInfo  [0] SEQUENCE { 
+ caseId   [0] CaseIdentity   OPTIONAL, 
+ iapId   [1] IAPSystemIdentity   OPTIONAL, 
+ contentIdentifier  [2] ContentIdentifier}, 
+     timeStamp  [1] TimeStamp    OPTIONAL, 
+     packetDirection  [2] PacketDirection    OPTIONAL, 
+     sequenceNumber  [3] INTEGER    OPTIONAL 
+} 
+ 
+PacketDirection ::= ENUMERATED { 
+     fromSubject (0), 
+     toSubject (1) 
+} 
+ 
+END  -- of B-2010-CCDeliveryHeaderModule 
+ 
+ 
+B-2010-ATIS-LAES-VoP-H323specific-Abstract-Syntax-Module 
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) cii(0) h323specific (1) version-4(3)} 
+ 
+DEFINITIONS IMPLICIT TAGS ::= 
+ 
+BEGIN 
+
+
+ 
+IMPORTS 
+ 
+CallType, TransportChannelInfo 
+FROM H-225-0  
+{itu-t(0) recommendation(0) h(8) h225-0(2250) version(0) v2(2)} 
+ -- The CallType and the TransportChannelInfo parameters are found in Versions 2 and later of H.225.0. 
+ 
+SupportedProtocols 
+FROM H-225-0  
+{itu-t(0) recommendation(0) h(8) h225-0(2250) version(0) v3(3)} 
+ -- The SupportedProtocols parameter is found in Versions 3 and later of H.225.0. 
+ 
+RasUsageInformation 
+FROM H-225-0  
+{itu-t(0) recommendation(0) h(8) h225-0(2250) version(0) v4(4)} 
+ -- The BandwidthDetails and RasUsageInformation parameters are found in Versions 4 and later of H.225.0. 
+ 
+CorrelationIdentifier, AdmissionControlStatus, PartyIdentity  
+FROM B-2010-ATIS-LAES-VoP-Abstract-Syntax-Module 
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) cii(0) common (0) version-4(3)};  
+ 
+H225RAS ::= CHOICE { 
+     originationPSPContents                         [0] 
+OriginationProtocolSpecificParameterContents, 
+     releasePSPContents    [1] ReleaseProtocolSpecificParameterContents, 
+     servingSystemPSPContents                [2] ServingSystemProtocolSpecificParameterContents, 
+     terminationAttemptPSPContents  [3] TerminationAttemptProtocolSpecificParameterContents, 
+     mediaAndAddressReportingPSPContents  [4] 
+MediaAndAddressReportingProtocolSpecificParameterContents 
+} 
+ 
+OriginationProtocolSpecificParameterContents ::= SEQUENCE { 
+     h323rasCallIdentifier   [1] CorrelationIdentifier   OPTIONAL, 
+     h323AdmissionControlStatus   [2] AdmissionControlStatus   OPTIONAL, 
+     h323CallModel   [3] H323CallModel    OPTIONAL, 
+     h323RequestedBandwidth  [4] Bandwidth     OPTIONAL, 
+     h323GrantedBandwidth  [5] Bandwidth     OPTIONAL, 
+     h323DesiredProtocols  [6] SupportedProtocols   OPTIONAL, 
+     h323AssociateProtocols  [7] SupportedProtocols   OPTIONAL, 
+     h323CallType   [8] CallType     OPTIONAL, 
+     h323ContactAddresses  [9] PartyIdentity    OPTIONAL 
+} 
+ 
+ReleaseProtocolSpecificParameterContents  ::= SEQUENCE  { 
+     h323UsageInformation   [1] RasUsageInformation      OPTIONAL 
+} 
+ 
+ServingSystemProtocolSpecificParameterContents  ::= SEQUENCE  { 
+     h323AdmissionControlStatus    [1] AdmissionControlStatus    OPTIONAL 
+} 
+ 
+TerminationAttemptProtocolSpecificParameterContents ::= SEQUENCE { 
+     h323RasCallIdentifier   [1] CorrelationIdentifier   OPTIONAL, 
+     h323AdmissionControlStatus    [2] AdmissionControlStatus  OPTIONAL 
+} 
+ 
+MediaAndAddressReportingProtocolSpecificParameterContents ::= SEQUENCE { 
+      bandwidthChangeInfo  [0] BandwidthChangeInfo  OPTIONAL 
+} 
+ 
+-- The BandwidthChangeInfo parameter reports the exchange (initiation or modification) of VoP media characteristics. 
+ 
+BandwidthChangeInfo ::= SEQUENCE  { 
+     bCTransactionType  [0] BCTransactionType, 
+ 
+     requestedBandwidth  [1] Bandwidth     OPTIONAL, 
+ -- requestedBandwidth shall be included for all values of the bCTransactionType when  
+ -- the requested bandwidth was not previously reported to provide an indication of the  
+ -- aggregate requested bandwidth (bandwidth for the entire call). 
+
+
+ 
+     grantedBandwidth    [2] Bandwidth    OPTIONAL, 
+ -- grantedBandwidth shall be included when the bCTransactionType indicates a  
+ -- confirmation to provide an indication of the aggregate granted bandwidth. 
+ 
+     bandwidthDetails   [3] SEQUENCE OF BandwidthDetails OPTIONAL, 
+ -- bandwidth details shall be included when bandwidth details are known. 
+ 
+     bCRejectionReason   [4]  VisibleString   OPTIONAL  
+ -- bCRejectionReason shall be included when the bCTransactionType indicates a  rejection. 
+} 
+ 
+BCTransactionType ::= ENUMERATED  { 
+     bandwidthRequest  (0), 
+     confirmation   (1), 
+     rejection   (2) 
+} 
+ 
+Bandwidth ::=  INTEGER -- bandwidth is an integer value in the units of bits/second. 
+ 
+BandwidthDetails ::= SEQUENCE  { 
+     sender    [0] BOOLEAN, 
+  -- True indicates that the intercept subject is the sender of the media stream.   
+  -- False indicates that the intercept subject is the receiver of the media stream. 
+ 
+     multicast   [1] BOOLEAN , -- True indicates that the stream is multicast. 
+     -- False indicates that the stream is not multicast 
+ 
+     bandwidth   [2] Bandwidth, -- Indicates bandwidth usage for the stream. 
+ 
+     rtcpaddresses   [3] TransportChannelInfo     OPTIONAL 
+     -- Indicates that RTCP addresses used for the stream. 
+} 
+        
+H323CallModel ::= ENUMERATED { 
+     direct-Routed   (0), 
+     gatekeeper-Routed  (1) 
+} 
+ 
+END -- of B-2010-ATIS-LAES-VoP-H323-Specific-Abstract-Syntax-Module 
+ 
+ 

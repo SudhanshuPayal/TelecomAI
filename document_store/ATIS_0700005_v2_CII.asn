@@ -1,0 +1,213 @@
+-- ATIS-0700005.v002.2017 LAES for 3GPP IMS-based VoIP and other Multimedia Services Abstract Syntax v2.0
+
+-- IMS 3GPP VoIP CII Delivery Module
+
+IMS-3GPP-VoIP-CII-Module-v2
+{iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) atis(30613) wtsc(5) ims-voip(2) cii-voip(0) version-3(0)}
+
+
+DEFINITIONS IMPLICIT TAGS ::=
+
+BEGIN
+
+IMPORTS
+
+-- Imports from ATIS-1000678.v3.2015 Module
+
+CCClose,
+CCOpen,
+			
+Redirection,
+
+ConferencePartyChange,
+Connection,		
+ConnectionBreak,	
+DialedDigitExtraction,
+ForkedCallInformation,
+NetworkSignal,
+SubjectSignal,
+DirectSignalReporting,
+MediaAndAddressReporting,
+CCChange,
+CCUnavailable,
+UUContent,
+TransitCarrierIdentity,
+CaseIdentity, Cause, CallIdentity, EncapsulatedSignalingMessage, IAPSystemIdentity, SDP, PartyIdentity, TimeStamp
+
+FROM ATIS-LAES-VoIP-Abstract-Syntax-Module-v3
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-678(0) cii(0) common (0) version-5(4)};
+
+
+ims-3GPP-VoIP-CII-Module-OID  OBJECT IDENTIFIER ::= {iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) atis(30613) wtsc(5) ims-voip(2) cii-voip(0) version-3(0)}
+
+LAESProtocol ::= SEQUENCE
+{
+     	ims-3GPP-VoIP-CII-Module-OID	[0]	OBJECT IDENTIFIER,
+     	laesMessage 			[1] 	IMS-3GPP-VoIP-CII-Message
+}
+
+
+IMS-3GPP-VoIP-CII-Message ::= CHOICE
+{
+     	ims-3GPP-VoIP-answer  			[1] Answer,
+     	ims-3GPP-VoIP-ccClose 			[2] CCClose,
+     	ims-3GPP-VoIP-ccOpen        		[3] CCOpen,		
+     	null-4  				[4] NULL,
+     	ims-3GPP-VoIP-origination 		[5] Origination,
+     	null-6 	                    		[6] NULL,	
+		-- [6] reserved by [025B] for Packet Envelope
+     	ims-3GPP-VoIP-redirection 		[7] Redirection,
+     	ims-3GPP-VoIP-release 			[8] Release,
+     	ims-3GPP-VoIP-servingSystem 		[9] ServingSystem,
+    	ims-3GPP-VoIP-termAttempt 		[10] TerminationAttempt,
+     	null-11 	                	[11] NULL,   	 
+	-- [11] reserved by [025B] for Connection Test
+     	ims-3GPP-VoIP-conferencePartyChange 	[12] ConferencePartyChange,
+     	ims-3GPP-VoIP-connection 		[13] Connection,
+     	ims-3gpp-VoIP-connectionBreak 		[14] ConnectionBreak,
+     	ims-3GPP-VoIP-dialedDigitExtraction 	[15] DialedDigitExtraction,
+     	ims-3GPP-VoIP-networkSignal 		[16] NetworkSignal,
+     	ims-3GPP-VoIP-subjectSignal 		[17] SubjectSignal,
+     	ims-3GPP-VoIP-directSignalReporting 	[18] DirectSignalReporting,
+     	ims-3GPP-VoIP-mediaAndAddressReporting 	[19] MediaAndAddressReporting,
+     	ims-3GPP-VoIP-ccChange			[20] CCChange,
+     	ims-3GPP-VoIP-ccUnavailable 		[21] CCUnavailable,
+    	null-22 				[22] NULL,	 
+		-- [22] reserved  by [678] for Surveillance Status
+    	null-23 				[23] NULL,	 
+		-- [23] reserved by [678] for Feature Management
+     	ims-3GPP-VOIP-uuContent 		[24] UUContent	 
+	
+}
+
+-- [ATIS-0700005 v2] Answer is same as that of T1.678 v3 
+Answer ::= SEQUENCE
+{
+     	caseId				[0] CaseIdentity,
+     	iAPSystemId			[1] IAPSystemIdentity 				OPTIONAL,
+     	timestamp			[2] TimeStamp,
+     	callId				[3] CallIdentity,
+     	answering 			[4] PartyIdentity 				OPTIONAL,
+     	location 			[5] Location 					OPTIONAL,
+    	answeringMedia			[6] SDP   					OPTIONAL,
+    	signalingMsg			[7] SET OF EncapsulatedSignalingMessage 	OPTIONAL 
+}
+
+-- [ATIS-0700005 v2] Origination is same as that of T1.678 v3
+Origination ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+     	iAPSystemId			[1] IAPSystemIdentity  				OPTIONAL,
+     	timestamp			[2] TimeStamp,
+     	callId				[3] CallIdentity,
+     	calling 			[4] PartyIdentity 				OPTIONAL,
+     	called 				[5] PartyIdentity				OPTIONAL,
+     	input 				[6] CHOICE
+	{
+		userInput 			[0] CHOICE
+		{
+			generic				[0]	VisibleString,	
+			specific			[1]	PartyIdentity
+		},
+						
+		translationInput		[1] CHOICE
+		{
+			generic				[0]	VisibleString,
+			specific			[1]	PartyIdentity
+		}
+	},
+		
+     	location  			[7] Location 					OPTIONAL,
+     	transitCarrierId		[8] TransitCarrierIdentity 			OPTIONAL,
+     	subjectMedia			[9] SDP 					OPTIONAL,
+     	originationCause		[10] VisibleString,
+	signalingMsg			[11] SET OF EncapsulatedSignalingMessage 	OPTIONAL,
+     	forkedCalls			[12] SET OF ForkedCallInformation             	OPTIONAL
+}
+
+-- [ATIS-0700005 v2] Release is same as that of T1.678 v3
+Release ::= SEQUENCE
+{
+     	caseId				[0] CaseIdentity,
+     	iAPSystemId			[1] IAPSystemIdentity  				OPTIONAL,
+     	timestamp			[2] TimeStamp,
+     	callId				[3] CallIdentity,
+     	location  			[4] Location 					OPTIONAL,
+     	cause				[5] Cause 					OPTIONAL,
+     	contactAddresses     		[6] PartyIdentity, 
+     	signalingMsg			[7] SET OF EncapsulatedSignalingMessage 	OPTIONAL
+}
+
+-- [ATIS-0700005 v2] Release is a subset of that of T1.678 v3, which all tags from 4 to 13 are optional,
+-- [ATIS-0700005 v2 change] but SystemIdentity has totally different definition
+ServingSystem ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+	sysId				[3] SystemIdentity				OPTIONAL
+}
+
+-- [ATIS-0700005 v2] TerminationAttempt is same as that of T1.678 v3, 
+-- [ATIS-0700005 v2 change] but RedirectedFromInformation has totally different definition
+TerminationAttempt ::= SEQUENCE
+{
+	caseId				[0] CaseIdentity,
+	iAPSystemId			[1] IAPSystemIdentity				OPTIONAL,
+	timestamp			[2] TimeStamp,
+	callId				[3] CallIdentity,
+	calling				[4] PartyIdentity,
+	called				[5] PartyIdentity				OPTIONAL,
+	associateMedia			[6] SDP						OPTIONAL,
+	redirectedFromInfo		[7] RedirectedFromInformation			OPTIONAL,
+	signalingMsg			[8] SET OF EncapsulatedSignalingMessage		OPTIONAL
+}
+
+
+Location ::= SET OF LocationInfo
+LocationInfo ::= SEQUENCE
+{
+        locationType 			[0] UTF8String,	
+        locationData			[1] UTF8String
+}
+
+
+-- [ATIS-0700005 v2 change] definition RedirectedFromInformation was changed from a J-STD-025B sequence to SEQUENCE OF PartyIdentity
+RedirectedFromInformation ::= SEQUENCE OF PartyIdentity
+
+
+-- [ATIS-0700005 v2 change] definition SystemIdentity was changed from IAPSystemIdentity to the following new structure
+SystemIdentity ::= CHOICE
+{
+	packetDataSystemID 		[0] PacketDataSystemID,
+	evolvedPacketSystemID 		[1] EvolvedPacketSystemID,
+	visitedNetworkId		[2] VisitedNetworkID
+}
+
+PacketDataSystemID ::= SEQUENCE
+{
+	servingSGSN-number 		[0] OCTET STRING (SIZE (1..20))			OPTIONAL,
+	servingSGSN-address 		[1] OCTET STRING (SIZE (5..17)) 		OPTIONAL,
+		-- Octets are coded according to [3GPP-23.003]
+	servingS4-SGSN-address 		[2] OCTET STRING 				OPTIONAL
+		-- Diameter Origin-Host and Origin-Realm of the S4-SGSN based on the [3GPP-29.272].
+		-- Only the data fields from the Diameter AVPs are provided concatenated with a
+		-- semicolon to populate this field.
+}
+ 
+EvolvedPacketSystemID ::= SEQUENCE
+{
+	servingMMEaddress 		[0] OCTET STRING 				OPTIONAL,
+		-- Contains the data fields from the Diameter Origin-Host and Origin-Realm AVPs
+		-- as received in the HSS from the MME according to the [3GPP 29.272].
+		-- Only the data fields from the Diameter AVPs are provided concatenated
+		-- with a semicolon to populate this field.
+	visitedNetworkId 		[1] VisitedNetworkID 				OPTIONAL
+		-- contains the visited network identifier inside the EPS Serving System   
+		-- Update for non 3GPP access, coded according to [3GPP 29.273].
+}
+
+VisitedNetworkID ::= UTF8String
+
+
+END  -- of IMS-3GPP-VoIP-CII-Module

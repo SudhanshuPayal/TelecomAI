@@ -1,0 +1,64 @@
+{
+  "globalSettings": {
+    "description": "Global rules that apply to all scenarios.",
+    "alwaysAllowedOptional": [
+      "NetworkSignal",
+      "SubjectSignal",
+      "MediaAndAddressReporting",
+      "PartyInformation"
+    ]
+  },
+  "scenarios": [
+    {
+      "scenarioName": "Target calls Associate-Answered",
+      "description": "A simple call from Target to Associate, which is answered.",
+      "requiredSequence": [
+        "Origination",
+        "CcOpen",
+        "Answer",
+        "Release",
+        "CcClose"
+      ],
+      "allowedOptional": [
+        "Location",
+        "Redirection"
+      ]
+    },
+    {
+      "scenarioName": "Associate calls Target-Answered",
+      "description": "A simple call from Associate to Target, which is answered.",
+      "requiredSequence": [
+        "TermAttempt",
+        "CcOpen",
+        "Answer",
+        "Release",
+        "CcClose"
+      ],
+      "allowedOptional": []
+    },
+    {
+      "scenarioName": "Target calls Associate-NoAnswer",
+      "description": "A simple call from Target to Associate, which is not answered.",
+      "requiredSequence": [
+        "Origination",
+        "CcOpen",
+        "Release",
+        "CcClose"
+      ],
+      "allowedOptional": [
+        "Location"
+      ]
+    },
+    {
+      "scenarioName": "Associate calls Target-NoAnswer",
+      "description": "A simple call from Associate to Target, which is not answered.",
+      "requiredSequence": [
+        "TermAttempt",
+        "CcOpen",
+        "Release",
+        "CcClose"
+      ],
+      "allowedOptional": []
+    }
+  ]
+}

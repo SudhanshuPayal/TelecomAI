@@ -1,0 +1,462 @@
+-- IAS CmII Abstract Syntax Module
+
+X2-2015-IAS-LAES-CmII-Abstract-Syntax-Module
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-ias(1) cmii(0) version-2015(2)}
+
+DEFINITIONS IMPLICIT TAGS ::=
+
+BEGIN
+
+IMPORTS
+
+CaseIdentity, TimeStamp
+FROM Laesp-j-std-025-b
+{iso(1) member-body(2) us(840) tia(113737) laes(2) tr45(0) j-std-025(0) j-std-025-b(2) version-1(0)};
+
+
+iAS-LAES-CmII-Abstract-Syntax-Module-OID OBJECT IDENTIFIER ::= 
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-ias(1) cmii(0) version-2015(2)}
+
+IasProtocol ::= SEQUENCE {
+    iAS-LAES-CmII-Abstract-Syntax-Module-OID		OBJECT IDENTIFIER,
+    iasMessage						IasMessage
+}
+
+IasMessage ::= CHOICE {
+    access-Attempt			[0] Access-Attempt,
+    access-Accepted			[1] Access-Accepted,
+    access-Failed			[2] Access-Failed,
+    access-Session-End 			[3] Access-Session-End,
+    access-Rejected			[4] Access-Rejected,
+    access-Signaling-Message-Report	[5] Access-Signaling-Message-Report,
+    session-Start			[6] Packet-Data-Session-Start,
+    session-Failed			[7] Packet-Data-Session-Failed,
+    session-End				[8] Packet-Data-Session-End,
+    session-Already-Established		[9] Packet-Data-Session-Already-Established,
+    data-Header-Report			[10] Packet-Data-Header-Report,
+    data-Summary-Report			[11] Packet-Data-Summary-Report
+}
+
+-- Message Definitions
+
+Access-Attempt ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    subscriberIdentity			[3] SubscriberIdentity,
+    accessMethod			[4] AccessMethod			OPTIONAL,
+    networkAccessNodeIdentity		[5] NetworkAccessNodeIdentity		OPTIONAL,
+    protocolSignal			[6] ProtocolSignal			OPTIONAL,
+    ...
+}
+
+Access-Accepted ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    subscriberIdentity			[3] SubscriberIdentity,
+    accessMethod			[4] AccessMethod			OPTIONAL,
+    networkAccessNodeIdentity		[5] NetworkAccessNodeIdentity		OPTIONAL,
+    iPAddressSet			[6] IpAddressSet			OPTIONAL,
+    accessSessionID			[7] AccessSessionID,
+    accessSessionCharacteristics	[8] AccessSessionCharacteristics	OPTIONAL,
+    location				[9] Location				OPTIONAL,
+    protocolSignal			[10] ProtocolSignal			OPTIONAL,
+    ...
+}
+
+Access-Failed ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    subscriberIdentity			[3] SubscriberIdentity,
+    iPAddressSet			[4] IpAddressSet			OPTIONAL,
+    reasonForTermination		[5] ReasonForTermination		OPTIONAL,
+    protocolSignal			[6] ProtocolSignal			OPTIONAL,
+    ...
+}
+
+Access-Session-End ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    subscriberIdentity			[3] SubscriberIdentity,
+    iPAddressSet			[4] IpAddressSet			OPTIONAL,
+    accessSessionID			[5] AccessSessionID,
+    reasonForTermination		[6] ReasonForTermination		OPTIONAL,
+    protocolSignal			[7] ProtocolSignal			OPTIONAL,
+    location				[8] Location				OPTIONAL,
+    ...
+}
+
+Access-Rejected ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    subscriberIdentity			[3] SubscriberIdentity,
+    iPAddressSet			[4] IpAddressSet			OPTIONAL,
+    reasonForTermination		[5] ReasonForTermination		OPTIONAL,
+    protocolSignal			[6] ProtocolSignal			OPTIONAL,
+    ...
+}
+
+Access-Signaling-Message-Report ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    accessSessionID			[3] AccessSessionID    			OPTIONAL,
+    signalingMsg			[4] SET OF InterceptedSignalingMessage,
+    ...
+}
+
+Packet-Data-Session-Start ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    subscriberIdentity			[3] SubscriberIdentity,
+    accessSessionID			[4] AccessSessionID			OPTIONAL,
+    packetDataSessionID			[5] PacketDataSessionID,
+    iPAddressSet			[6] IpAddressSet,
+    accessSessionCharacteristics	[7] AccessSessionCharacteristics	OPTIONAL,
+    location				[8] Location				OPTIONAL,
+    deliveryInformation			[9] LEA-CmC-Delivery			OPTIONAL,
+    ...
+}
+
+Packet-Data-Session-Failed ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    subscriberIdentity			[3] SubscriberIdentity,
+    accessSessionID			[4] AccessSessionID			OPTIONAL,
+    reasonForTermination		[5] ReasonForTermination		OPTIONAL,
+    ...
+}
+
+Packet-Data-Session-End ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    subscriberIdentity			[3] SubscriberIdentity,
+    accessSessionID			[4] AccessSessionID			OPTIONAL,
+    packetDataSessionID			[5] PacketDataSessionID,
+    iPAddressSet			[6] IpAddressSet,
+    reasonForTermination		[7] ReasonForTermination		OPTIONAL,
+    location				[8] Location				OPTIONAL,
+    ...
+}
+
+Packet-Data-Session-Already-Established ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    subscriberIdentity			[3] SubscriberIdentity,
+    accessSessionID			[4] AccessSessionID			OPTIONAL,
+    packetDataSessionID			[5] PacketDataSessionID,
+    iPAddressSet			[6] IpAddressSet			OPTIONAL,
+    accessSessionCharacteristics	[7] AccessSessionCharacteristics	OPTIONAL,
+    location				[8] Location				OPTIONAL,
+    deliveryInformation			[9] LEA-CmC-Delivery			OPTIONAL,
+    ...
+}
+
+Packet-Data-Header-Report ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    headerSet				[3] HeaderSet,
+    ...
+}
+
+Packet-Data-Summary-Report ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    streamSet				[3] StreamSet,
+    ...
+}
+
+-- Parameter Definitions
+
+AccessMethod ::= SET OF SEQUENCE {
+    accessType			[0] CHOICE {
+				    dialUp	[0] NULL,
+				    dsl		[1] NULL,
+				    lan		[2] NULL,
+				    cable	[3] NULL,
+				    wiFi	[4] NULL,
+				    wiMax	[5] NULL,
+				    other	[6] UTF8String
+				}						OPTIONAL,
+    accessEquipmentID		[1] UTF8String					OPTIONAL,
+    partOfMultipleLogin		[2] NULL					OPTIONAL
+}
+
+IpAddressSet ::= SET OF SEQUENCE {
+    address 			[0] IpAddress,
+    allocationMethod		[1] CHOICE {
+				    static		[0] NULL,
+				    dynamic		[1] NULL,
+				    unknown		[2] NULL,
+				    notApplicable 	[3] NULL
+				},
+    prefixLen			[2] INTEGER					OPTIONAL
+}
+
+AccessSessionID ::= Value
+
+AccessSessionCharacteristics ::= Value
+
+ContentIdentifier ::= OCTET STRING
+
+HeaderSet ::= SEQUENCE {
+    packetDataSessionID		[0] PacketDataSessionID,
+    sourceIPaddress		[1] IpAddress,
+    destinationIPaddress	[2] IpAddress,
+    protocol			[3] INTEGER,
+    sourcePortNumber		[4] INTEGER					OPTIONAL,
+    destinationPortNumber	[5] INTEGER					OPTIONAL,
+    iPv6FlowLabel		[6] INTEGER					OPTIONAL,
+    byteCount			[30] INTEGER					OPTIONAL
+}
+
+InterceptedSignalingMessage ::= SEQUENCE {
+    messageType			[0] MessageType,
+    message			[1] Value
+}
+
+IAPSystemIdentity ::= VisibleString
+
+IpAddress ::= CHOICE {
+    ipV4			[1] OCTET STRING(SIZE(4)),
+    ipV6			[2] OCTET STRING(SIZE(16))
+}
+
+LEA-CmC-Delivery ::= ContentIdentifier
+
+Location ::= SET OF SEQUENCE {
+    locationType		[0] UTF8String,
+    location			[1] UTF8String
+}
+MessageType ::= ENUMERATED {
+    radius	(0),
+    diameter	(1),
+    xml		(2),
+    asndot1	(3),
+    other	(4)
+}
+
+NetworkAccessNodeIdentity ::= Value
+
+PacketDataSessionID ::= Value
+
+ProtocolSignal ::= SEQUENCE {
+    protocol			[0] Protocol,
+    signal			[1] SET OF Value
+}
+
+Protocol  ::=  CHOICE {
+    radius			[0] NULL,
+    other			[1] UTF8String
+}
+
+ReasonForTermination ::= Value
+
+StreamSet ::= SET OF  SEQUENCE {
+    packetDataSessionID		[0] PacketDataSessionID,
+    sourceIPaddress		[1] IpAddress,
+    destinationIPaddress	[2] IpAddress,
+    packetCount			[3] INTEGER,
+    protocol			[4] INTEGER,
+    sourcePortNumber		[5] INTEGER					OPTIONAL,
+    destinationPortNumber	[6] INTEGER					OPTIONAL,
+    iPv6FlowLabel		[7] INTEGER					OPTIONAL,
+    firstPacketTimestamp	[8] TimeStamp,
+    lastPacketTimestamp		[9] TimeStamp,
+    byteCount			[30] INTEGER					OPTIONAL
+}
+
+SubscriberIdentity ::= Value
+
+Value ::= CHOICE {
+    stringVS			[0] VisibleString,
+    stringUTF8			[1] UTF8String,
+    integer			[2] INTEGER,
+    octets			[3] OCTET STRING,
+    numeric			[4] NumericString
+}
+
+END  -- of X2-2015-IAS-LAES-CmII-Abstract-Syntax-Module
+
+-- IAS CmCC Abstract Syntax Module
+
+X2-2015-IAS-LAES-CmCC-Abstract-Syntax-Module
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-ias(1) cmcc(1) version-2015(2)}
+
+DEFINITIONS IMPLICIT TAGS ::=
+
+BEGIN
+
+IMPORTS
+
+CaseIdentity, TimeStamp
+FROM Laesp-j-std-025-b
+{iso(1) member-body(2) us(840) tia(113737) laes(2) tr45(0) j-std-025(0) j-std-025-b(2) version-1(0)}
+
+IAPSystemIdentity, ContentIdentifier
+FROM X2-2015-IAS-LAES-CmII-Abstract-Syntax-Module
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-ias(1) cmii(0) version-2015(2)};
+
+
+IAS-CC-APDU ::= SEQUENCE {
+    cmcDeliveryHeader		[0] CMCDeliveryHeader,
+    payload			[1] OCTET STRING
+}
+
+CMCDeliveryHeader ::= SEQUENCE {
+    correlationInfo		[0] SEQUENCE {
+				    caseId		[0] CaseIdentity,
+				    iAPSystemId		[1] IAPSystemIdentity,
+				    contentIdentifier	[2] ContentIdentifier
+				},
+    timestamp			[1] TimeStamp,
+    packetDirection		[2] PacketDirection				OPTIONAL,
+    sequenceNumber		[3] INTEGER					OPTIONAL
+}
+
+PacketDirection ::= ENUMERATED {
+    fromSubject		(0),
+    toSubject		(1)
+}
+
+END  -- of X2-2015-IAS-LAES-CmCC-Abstract-Syntax-Module
+
+-- IAS CmII Optional Messages Abstract Syntax Module
+
+X2-2015-IAS-LAES-CmII-Optional-Messages-Abstract-Syntax-Module
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-ias(1) cmii-optional(2) version-2015(2)}
+
+DEFINITIONS IMPLICIT TAGS ::=
+
+BEGIN
+
+IMPORTS
+
+CaseIdentity, TimeStamp
+FROM Laesp-j-std-025-b
+{iso(1) member-body(2) us(840) tia(113737) laes(2) tr45(0) j-std-025(0) j-std-025-b(2) version-1(0)}
+
+IAPSystemIdentity, IpAddressSet
+FROM X2-2015-IAS-LAES-CmII-Abstract-Syntax-Module
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-ias(1) cmii(0) version-2015(2)};
+
+iAS-LAES-CmII-Optional-Messages-Abstract-Syntax-Module-OID OBJECT IDENTIFIER ::=
+{iso(1) member-body(2) us(840) tia(113737) laes(2) t1(1) t1-ias(1) cmii-optional(2) version-2015(2)}
+
+IasOptionalProtocol ::= SEQUENCE {
+    iAS-LAES-CmII-Optional-Messages-Abstract-Syntax-Module-OID		OBJECT IDENTIFIER,
+    iasOptionalMessage							IasOptionalMessage
+}
+
+IasOptionalMessage ::= CHOICE {
+    serviceChange			[0] ServiceChange,
+    vpnSecurityEstablishment		[1] VPNSecurityEstablishment,
+    vpnSecurityRelease			[2] VPNSecurityRelease,
+    surveillanceActivation		[3] SurveillanceActivation,
+    surveillanceContinuation		[4] SurveillanceContinuation,
+    surveillanceChange			[5] SurveillanceChange,
+    surveillanceDeActivation		[6] SurveillanceDeActivation
+}
+
+-- Message Definitions
+
+ServiceChange ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    subscriber				[3] SubscriberIdentity,
+    primaryAccountSubscriber		[4] SubscriberIdentity			OPTIONAL,
+    interceptSubjectsIPAddressSet	[5] IpAddressSet			OPTIONAL,
+    serverIdentity			[6] ServerIdentity			OPTIONAL,
+    changesAttempted			[7] ChangesAttempted,
+    resultofChangeAttempt		[8] ResultofChangeAttempt,
+    ...
+}
+
+VPNSecurityEstablishment ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    sessionID				[3] SessionIdentity			OPTIONAL,
+    subscriber				[4] SubscriberIdentity			OPTIONAL,
+    accessSessionIPAddressSet		[5] IpAddressSet			OPTIONAL,
+    vpnSecurityAssociation		[6] VPNSecurityAssociationIdentity,
+    vpnSecurityAssociationProtocols	[7] VPNSecurityAssociationProtocols,
+    localVPNEndpointIPAddressSet	[8] IpAddressSet,
+    remoteVPNEndpointIPAddressSet	[9] IpAddressSet,
+    localVPNEncryptionAlgorithms	[10] LocalVPNEncryptionAlgorithms,
+    remoteVPNEncryptionAlgorithms	[11] RemoteVPNEncryptionAlgorithms,
+    localVpnEncryptionKeys		[12] VPNEncryptionKeys,
+    remoteVpnEncryptionKeys		[13] VPNEncryptionKeys,
+    ...
+}
+
+VPNSecurityRelease ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    sessionID				[3] SessionIdentity			OPTIONAL,
+    subscriber				[4] SubscriberIdentity			OPTIONAL,
+    accessSessionIPAddressSet		[5] IpAddressSet			OPTIONAL,
+    vpnSecurityAssociation		[6] VPNSecurityAssociationIdentity,
+    vpnTerminationCause			[7] VPNTerminationCause,
+    ...
+}
+
+SurveillanceActivation ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    surveillanceStatus			[3] SurveillanceStatus,
+    ...
+}
+
+SurveillanceContinuation ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    surveillanceStatus			[3] SurveillanceStatus,
+    ...
+}
+
+SurveillanceChange ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    surveillanceStatus			[3] SurveillanceStatus,
+    ...
+}
+
+SurveillanceDeActivation ::= SEQUENCE {
+    caseId				[0] CaseIdentity,
+    iAPSystemId				[1] IAPSystemIdentity,
+    timestamp				[2] TimeStamp,
+    ...
+}
+
+-- Parameter Definitions
+
+ChangesAttempted ::= UTF8String
+LocalVPNEncryptionAlgorithms::= UTF8String
+RemoteVPNEncryptionAlgorithms ::= UTF8String
+ResultofChangeAttempt ::= UTF8String
+ServerIdentity ::= UTF8String
+SessionIdentity ::= UTF8String
+SubscriberIdentity ::= UTF8String
+SurveillanceStatus ::= UTF8String
+VPNEncryptionKeys ::= SET OF UTF8String
+VPNSecurityAssociationIdentity ::= UTF8String
+VPNSecurityAssociationProtocols ::= SET OF UTF8String
+VPNTerminationCause ::= UTF8String
+
+END  -- of X2-2015-IAS-LAES-CmII-Optional-Messages-Abstract-Syntax-Module

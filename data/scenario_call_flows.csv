@@ -1,0 +1,5 @@
+ScenarioName,Description,ExpectedMessageSequence
+Target calls Associate-Answered,"A simple call from Target to Associate, which is answered.",Origination, CcOpen, Answer, Release, CcClose
+Associate calls Target-Answered,"A simple call from Associate to Target, which is answered.",TermAttempt, CcOpen, Answer, Release, CcClose
+Target calls Associate-NoAnswer,"A simple call from Target to Associate, which is not answered.",Origination, CcOpen, Release, CcClose
+Associate calls Target-NoAnswer,"A simple call from Associate to Target, which is not answered.",TermAttempt, CcOpen, Release, CcClose
