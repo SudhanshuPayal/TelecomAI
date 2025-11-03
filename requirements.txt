@@ -18,3 +18,4 @@ Flask-Migrate
 celery
 redis
 pypdf
+jq

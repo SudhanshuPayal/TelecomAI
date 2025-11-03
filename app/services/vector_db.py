@@ -10,27 +10,36 @@ from app.config import VECTOR_DB_PATH
 class VectorDBService:
     """
     Service for managing interactions with the Chroma vector database.
-    Handles ingestion, retrieval, and re-creation.
+    This service uses "lazy loading" for the database connection
+    to prevent file locks during ingestion.
     """
     def __init__(self):
         print("Initializing VectorDB Service...")
+        self.embedding_model = model_loader.embedding_model
         
         # --- THIS IS THE FIX ---
-        # Changed from: model_loader.get_embedding_model()
-        # To:           model_loader.embedding_model
-        self.embedding_model = model_loader.embedding_model
+        # Do NOT initialize the DB connection here.
+        # It will be loaded on demand.
+        self.db = None
         # --- END OF FIX ---
 
-        # Ensure the DB directory exists
-        if not os.path.exists(VECTOR_DB_PATH):
-            os.makedirs(VECTOR_DB_PATH)
-            
-        # Load the persistent vector store
-        self.db = Chroma(
-            persist_directory=VECTOR_DB_PATH,
-            embedding_function=self.embedding_model
-        )
-        print("Vector database loaded and retriever is ready.")
+    def _get_db_connection(self):
+        """
+        Lazily gets or creates the database connection.
+        This ensures we only connect when we're ready.
+        """
+        if self.db is None:
+            print("Creating new ChromaDB persistent connection...")
+            # Ensure the directory exists before trying to connect
+            if not os.path.exists(VECTOR_DB_PATH):
+                os.makedirs(VECTOR_DB_PATH)
+                
+            self.db = Chroma(
+                persist_directory=VECTOR_DB_PATH,
+                embedding_function=self.embedding_model
+            )
+            print("ChromaDB connection established.")
+        return self.db
 
     def recreate_db(self):
         """
@@ -38,32 +47,36 @@ class VectorDBService:
         an empty one. This is used for a full, clean re-ingestion.
         """
         print(f"--- Clearing existing vector database at: {VECTOR_DB_PATH} ---")
+        
+        # 1. Explicitly set self.db to None to "close" our handle
+        self.db = None 
+        
+        # 2. Clear the directory
         if os.path.exists(VECTOR_DB_PATH):
             try:
                 shutil.rmtree(VECTOR_DB_PATH)
                 print("Database cleared successfully.")
             except Exception as e:
-                print(f"Error clearing database: {e}")
+                print(f"Error clearing database: {e}. Please check file permissions.")
                 return
         else:
             print("No existing database to clear.")
-
-        # Re-initialize the database
-        print("Re-initializing empty vector database...")
-        # We must re-create the directory after deleting it
+        
+        # 3. Re-create the directory
         os.makedirs(VECTOR_DB_PATH, exist_ok=True) 
-        self.db = Chroma(
-            persist_directory=VECTOR_DB_PATH,
-            embedding_function=self.embedding_model
-        )
+        
+        # 4. Get a fresh connection, which will create the new files
+        self.db = self._get_db_connection()
         print("--- Empty vector database re-initialized ---")
 
     def ingest_documents(self, documents: List[Document]):
         """
         Chunks, embeds, and stores a list of documents in the vector database.
         """
-        print(f"Received {len(documents)} documents for ingestion.")
+        # Get the database connection
+        db = self._get_db_connection()
         
+        print(f"Received {len(documents)} documents for ingestion.")
         if not documents:
             print("No documents to ingest.")
             return
@@ -75,14 +88,16 @@ class VectorDBService:
 
         # 2. Add documents to the Chroma database
         print(f"Adding {len(chunked_docs)} chunks to the vector database...")
-        self.db.add_documents(chunked_docs)
+        db.add_documents(chunked_docs)
         print("Ingestion complete. Vector database is updated.")
 
     def get_retriever(self, k_results=3):
         """
         Returns a retriever object for querying the vector database.
         """
-        return self.db.as_retriever(search_kwargs={"k": k_results})
+        # Get the database connection
+        db = self._get_db_connection()
+        return db.as_retriever(search_kwargs={"k": k_results})
 
 # Create a single, globally accessible instance of the service
 vector_db_service = VectorDBService()
